@@ -1,0 +1,13 @@
+---
+pagetitle: "Registrar alimentação"
+---
+
+::: {.tela data-aba="registrar" data-tela="iPhone 16 - 22"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaRegistrarAlimentacao } from "../assets/js/telas/registrar-alimentacao.js";
+  telaRegistrarAlimentacao(document.querySelector(".tela"));
+</script>
+```

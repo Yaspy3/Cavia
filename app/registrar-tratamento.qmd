@@ -1,0 +1,13 @@
+---
+pagetitle: "Tratamentos e medicações"
+---
+
+::: {.tela data-aba="registrar" data-tela="iPhone 16 - 26"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaRegistrarTratamento } from "../assets/js/telas/registrar-tratamento.js";
+  telaRegistrarTratamento(document.querySelector(".tela"));
+</script>
+```

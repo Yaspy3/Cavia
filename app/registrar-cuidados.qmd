@@ -1,0 +1,13 @@
+---
+pagetitle: "Cuidados do grupo"
+---
+
+::: {.tela data-aba="registrar" data-tela="iPhone 16 - 27"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaRegistrarCuidados } from "../assets/js/telas/registrar-cuidados.js";
+  telaRegistrarCuidados(document.querySelector(".tela"));
+</script>
+```

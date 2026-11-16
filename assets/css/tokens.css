@@ -1,0 +1,78 @@
+:root {
+  /* superfícies e texto */
+  --bg: #FFF4EC;               /* fundo das telas (concha) */
+  --surface: #FFFFFF;          /* cartões, barra de navegação, formulários */
+  --surface-sunken: #F6E9DD;   /* segmentado, trilha do interruptor, desativado */
+  --ink: #1E2B2D;
+  --ink-muted: #566664;
+  --line: #E8DCCF;             /* divisor de 1px, decorativo */
+  --line-strong: #857A6F;      /* borda de campos e contornos que precisam ser vistos */
+
+  /* marca (teal) */
+  --primary: #1E555C;
+  --primary-pressed: #173F45;
+  --on-primary: #FFFFFF;
+  --primary-soft: #DCEBE9;
+
+  /* rosa: botão Registrar, destaques afetivos */
+  --action: #C98686;           /* só preenchimento; nunca texto */
+  --action-pressed: #D6A0A0;   /* clareia ao pressionar */
+  --on-action: #FFFFFF;          /* texto branco nos botões rosa (pedido da designer; 2,9:1, abaixo dos 4,5:1 da seção 8) */
+  --action-icone: #600000;       /* ícone escuro sobre o rosa: sinal de + do Registrar e seta de voltar (4,8:1) */
+  --rose-soft: #F7E4E1;
+  --rose-ink: #8F4247;
+
+  /* verde-folha: alimentação, ambiente */
+  --leaf: #899878;             /* só preenchimento */
+  --leaf-soft: #E6ECDD;
+  --leaf-ink: #52633F;
+
+  /* lavanda: saúde e medicamentos */
+  --lavender: #966B9D;
+  --lavender-soft: #EEE5F0;
+  --lavender-ink: #71477A;
+
+  /* âmbar: atenção moderada */
+  --warn: #F2A93B;
+  --warn-soft: #FFE9C2;
+  --warn-ink: #8E6017;
+
+  /* vermelho: SÓ urgência e erro */
+  --danger: #A82A22;
+  --danger-soft: #FBE1DE;
+  --on-danger: #FFFFFF;
+
+  /* status positivo */
+  --ok: var(--leaf-ink);
+  --ok-soft: var(--leaf-soft);
+
+  /* espaçamento */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px;
+  --space-4: 16px; --space-5: 24px; --space-6: 32px;
+
+  /* raios */
+  --radius-sm: 10px;   /* chips */
+  --radius-md: 16px;   /* campos, avisos */
+  --radius-lg: 22px;   /* cartões, segmentado, navegação */
+  --radius-xl: 28px;   /* cantos inferiores do cabeçalho */
+  --radius-pill: 999px;
+
+  /* sombras */
+  --shadow-card: 0 1px 2px rgba(30,43,45,.10);
+  --shadow-nav: 0 -2px 12px rgba(30,43,45,.08);
+  --shadow-fab: 0 4px 10px rgba(143,66,71,.30);
+  --shadow-sheet: 0 -4px 20px rgba(30,43,45,.18);
+  --shadow-focus: 0 0 0 2px #ffffff, 0 0 0 4px #1e2b2d;
+
+  /* tamanhos */
+  --size-touch: 44px;
+  --size-row: 52px;
+  --size-button: 56px;
+  --size-nav: 84px;
+  --size-icon: 22px;
+  --size-avatar: 52px;
+
+  /* fontes */
+  --font-corpo: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-titulo: var(--font-corpo);   /* Figtree em todo o app (decisão da designer) */
+}

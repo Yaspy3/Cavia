@@ -1,0 +1,900 @@
+---
+title: "Cavia · instruções para construir o protótipo funcional"
+subtitle: "Site em Quarto, instalável como PWA, com aparência de aplicativo móvel"
+lang: pt-BR
+date: 2026-11-15
+format:
+  html:
+    toc: true
+    toc-depth: 2
+---
+
+::: {.callout-note}
+**Para o Claude Code.** Este arquivo é a fonte de verdade do projeto. Leia-o inteiro antes de escrever código. Ele **não** faz parte do site: guarde-o em `_docs/instrucoes-cavia.qmd` (o Quarto ignora pastas que começam com `_`). As **imagens das telas**, exportadas do Figma pela designer, ficam **na mesma pasta que este arquivo** (`_docs/`). Os blocos de código marcados com `arquivo: caminho` na primeira linha são arquivos reais do projeto, já testados com o Quarto 1.11.9: crie cada um no caminho indicado e **não copie a linha do marcador** (ela é só uma etiqueta, e num JSON ou num `sw.js` seria um erro).
+:::
+
+# 1. Resumo e regras de ouro
+
+**O que é.** Cavia é um aplicativo móvel para tutores acompanharem a saúde e o bem-estar de porquinhos-da-índia (*Cavia porcellus*) criados como animais de estimação. É o projeto de um TCC de Design (UFPB). O que será construído aqui é um **protótipo funcional de alta fidelidade**, usado para mostrar o projeto e para fazer testes de usabilidade.
+
+**Como será feito.** Um site estático em Quarto, com uma tela por página, JavaScript puro no navegador, dados salvos no próprio aparelho e instalação como PWA.
+
+Regras de ouro, em ordem de prioridade:
+
+1. **As imagens das telas mandam.** Elas estão na mesma pasta deste arquivo (`_docs/`) e foram desenhadas pela designer no Figma. Abra **todas** (ferramenta Read) antes de planejar e abra a imagem da tela antes de construí-la. Este arquivo descreve o comportamento; a imagem descreve o visual, a ordem dos elementos e os textos. Se faltar a imagem de uma funcionalidade, **pergunte** antes de inventar (seção 12).
+2. **Use os tokens pelo nome.** Nunca copie um valor hexadecimal para dentro de uma tela (seção 7).
+3. **Não invente conteúdo clínico.** O app registra e orienta, nunca prescreve. Nada de doses, diagnósticos ou limites de saúde inventados (seção 9).
+4. **Cor nunca é a única mensagem.** Todo status leva ícone e palavra (seção 8).
+5. **Sem servidor, sem contas reais, sem rede.** Tudo roda no navegador e funciona offline depois da primeira visita. Nenhum dado sai do aparelho.
+6. **Sem dependências de execução.** JavaScript e CSS puros, módulos ES, sem framework e sem bundler. Pacotes npm só para tarefas de desenvolvimento (copiar fontes, gerar ícones).
+7. **Caminhos sempre relativos.** O site será publicado numa subpasta (`usuario.github.io/cavia/`). Nunca use caminhos que comecem com `/`.
+8. **Trabalhe por fases** (seção 13). Ao fim de cada fase, rode o checklist, faça um commit e diga o que mudou.
+9. **Registre o que decidir.** Toda decisão que não está neste arquivo vai para `DECISOES.md`; todo texto de exemplo ou conteúdo a validar vai para `PENDENCIAS.md` (seção 14). Isso alimenta o capítulo do TCC.
+10. **Em dúvida, pergunte.** A pessoa que escreveu este arquivo é a designer do projeto e está acompanhando.
+
+## O que este protótipo não é
+
+- Não é um app nativo, não usa backend nem banco de dados remoto.
+- Não envia notificações push reais. Os lembretes são simulados dentro do app (seção 9.6).
+- Não tem login de verdade. Entrar e criar conta são telas que guardam só o nome e o e-mail no aparelho. **Nunca guarde senha.**
+- Não é uma ferramenta clínica. Os textos de saúde são exemplos de projeto e ainda precisam de revisão veterinária.
+
+# 2. Contexto do projeto
+
+## 2.1 Origem e metodologia
+
+- TCC de Design (UFPB), metodologia **Design Thinking**. Etapa atual: do wireframe ao protótipo.
+- A arquitetura de informação está pronta (inventário de funcionalidades, sitemap, fluxos, rotulação). Os wireframes foram feitos pela designer no Figma e exportados como imagens, guardadas na mesma pasta deste arquivo. O design system, a logo e o nome também estão prontos.
+- O protótipo será testado com pessoas (teste de usabilidade). Por isso, os **quatro fluxos centrais** (seção 11) precisam funcionar de ponta a ponta e sem tropeços.
+
+## 2.2 Decisões de projeto já tomadas
+
+Estas decisões vêm da arquitetura de informação. Não as reverta. Se as imagens do Figma mostrarem algo diferente, **não decida sozinho**: aponte a diferença no `TELAS.md` (seção 12.2) e pergunte.
+
+- O app tem **quatro seções** na barra inferior: `Início`, `Animais`, `Registrar` (ação central, em destaque) e `Perfil`.
+- **Não existe seção de aprendizado.** O conteúdo educativo fica dentro das outras telas (dicas no Início, "o que fazer" nos alertas, orientações no Diário e na Saúde). Busca de conteúdos (F21) está fora do escopo.
+- Os registros são **por animal e por grupo**, porque porquinhos vivem em grupo. A água é registrada **no grupo**, não no animal (eles dividem o bebedouro). Alimentação também é do grupo.
+- **Alertas nascem da observação diária** (apetite, fezes, urina, comportamento) comparada com os registros anteriores, e do peso. **Sintomas registrados não geram alerta**: vão para o histórico de Saúde, e os sinais de urgência aparecem com a orientação na própria tela.
+- O app **nunca sugere dose** de medicamento. Dose e duração vêm da receita do veterinário.
+- O check-up de saúde fica no Diário do animal, numa aba própria, com frequência configurável (semanal por padrão). Tudo vem como "normal"; o tutor marca só o que estranhar.
+- O cadastro do animal exige só **nome e grupo**. O perfil tem foto ou avatar montável (cores e marcas) e tags de idade, sexo e raça (sem peso, que tem aba própria).
+- Lembretes: os automáticos (check-up, doses, consulta, limpeza) e os **personalizados**, criados pelo tutor.
+- Os dados de uma pessoa, no teste, ficam só no aparelho dela.
+
+## 2.3 Identidade
+
+- Nome: **Cavia** (sempre com C maiúsculo no texto; a logo usa minúsculas).
+- Logo: **Direção 5, "Traço contínuo"**: perfil de um porquinho em traço contínuo, verde-petróleo sobre o fundo concha, com a folha e o pingo do `i` em verde-folha. Os arquivos SVG vêm em `assets/logo/` (fornecidos pela designer; se não estiverem lá, peça).
+- A verde-folha (`leaf`) tem só 2,84:1 sobre o fundo: na logo é decorativa, nunca carrega texto.
+
+# 3. Stack e decisões técnicas
+
+| Decisão | Escolha | Por quê |
+|---|---|---|
+| Gerador do site | Quarto (`type: website`), testado na 1.11.9 | Pedido da designer; gera HTML estático. |
+| Uma tela = | um arquivo `.qmd` curto | Estrutura simples de manter e de mostrar no TCC. |
+| Lógica | JavaScript puro em módulos ES (`assets/js/`) | Funciona offline e sem etapa de build. |
+| Estilo | CSS puro, com variáveis dos tokens; `minimal: true` | Desliga o tema Bootstrap do Quarto e dá controle total ao visual. |
+| Dados | `localStorage` versionado (fotos em miniatura) | Sem servidor; some ao limpar o navegador, o que é aceitável num protótipo. |
+| Gráficos | SVG gerado por JavaScript | Sem biblioteca; combina com o estilo das imagens de referência. |
+| PDF do histórico | página de prévia com folha de estilo de impressão (`window.print()`) | Sem biblioteca; o navegador salva como PDF. |
+| Fontes | Fraunces e Figtree, **hospedadas no próprio site** | Funciona offline, sem pedir nada ao Google. |
+| Publicação | GitHub Pages (pasta `docs/`) ou Netlify, sempre em HTTPS | Service worker só funciona em HTTPS (exceto em `localhost`). |
+
+**O Quarto é um gerador estático.** Ele não tem servidor nem estado. Tudo o que for dinâmico (listas, gráficos, formulários, alertas) é feito por JavaScript no navegador, lendo o `localStorage`. **Não use células de código executáveis** (`{python}`, `{r}`, `{ojs}`): o projeto não deve depender de Python, R ou Jupyter para renderizar.
+
+## 3.1 Armadilhas do Quarto já conhecidas
+
+- Use **`pagetitle:`** no lugar de `title:` nas telas. Com `title:`, o Quarto insere um cabeçalho com `<h1>` extra no topo.
+- Escreva HTML bruto dentro de blocos <code>```{=html}</code>, para o Pandoc não reinterpretar o conteúdo.
+- Em HTML bruto, link para outra tela é `href="registrar-peso.html"` (não `.qmd`). Em Markdown, `[texto](registrar-peso.qmd)` funciona.
+- O Quarto já emite uma `<meta name="viewport">`, e sem `viewport-fit=cover` a barra inferior não respeita o recorte de tela (notch). O script de pós-renderização (seção 5.3) troca essa tag pela correta.
+- O Quarto só copia para a saída os arquivos que ele **vê referenciados**. Módulos importados por `import` dentro de um `.js`, o `sw.js`, o manifesto, as fontes e os ícones não são vistos: eles precisam estar em `project.resources`.
+- Páginas ficam todas a **um nível** da raiz (`app/` e `entrada/`), exceto `index.qmd`. Assim os caminhos relativos (`../assets/...`) são sempre os mesmos.
+- Metadados de pasta (`_metadata.yml`) são **somados** aos do projeto, não substituídos. Por isso as inclusões de cabeçalho e navegação ficam em `_metadata.yml` por pasta, e não no `_quarto.yml`.
+
+# 4. Estrutura de pastas
+
+```text
+cavia-prototipo/
+├─ _quarto.yml
+├─ CLAUDE.md                  # uma linha: "Leia _docs/instrucoes-cavia.qmd antes de qualquer tarefa."
+├─ DECISOES.md                # decisões tomadas durante a construção (seção 14)
+├─ PENDENCIAS.md              # textos de exemplo e conteúdo a validar (seção 14)
+├─ TELAS.md                   # inventário das telas, criado na Fase 0 (seção 12.2)
+├─ _docs/
+│  ├─ instrucoes-cavia.qmd    # este arquivo (ignorado pelo Quarto)
+│  └─ *.png                   # imagens das telas, exportadas do Figma (referência; nunca vão para o site)
+├─ _includes/
+│  ├─ head-raiz.html          # <head> da index.qmd
+│  ├─ head.html               # <head> das telas em app/ e entrada/
+│  └─ nav.html                # barra inferior (só em app/)
+├─ assets/
+│  ├─ css/                    # tokens.css, fontes.css, base.css, componentes.css, telas.css
+│  ├─ js/                     # app.js, store.js, regras.js, formato.js, ui.js, graficos.js, icones.js, seed.js
+│  ├─ fonts/                  # woff2 de Fraunces e Figtree
+│  ├─ icons/                  # PNGs do PWA (192, 512, maskable)
+│  └─ logo/                   # SVGs da logo
+├─ scripts/
+│  └─ pos-render.ts           # corrige a viewport e carimba o service worker
+├─ manifest.webmanifest
+├─ sw.js
+├─ index.qmd                  # abertura e redirecionamento
+├─ entrada/                   # sem barra inferior: boas-vindas, entrar, criar-conta
+├─ app/                       # com barra inferior: todas as telas do app
+└─ docs/                      # saída do quarto render (é o que se publica)
+```
+
+**Nomes.** Arquivos em `kebab-case` sem acento (`registrar-peso.qmd`). Termos do domínio ficam em português e sem acento no código (`animais`, `pesagens`, `lembretes`); palavras de linguagem (`function`, `const`) seguem em inglês.
+
+# 5. Configuração do Quarto (testada)
+
+## 5.1 Projeto
+
+```yaml
+# arquivo: _quarto.yml
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "index.qmd"
+    - "entrada/*.qmd"
+    - "app/*.qmd"
+  post-render: scripts/pos-render.ts
+  resources:
+    - manifest.webmanifest
+    - sw.js
+    - assets/js/
+    - assets/fonts/
+    - assets/icons/
+    - assets/logo/
+
+website:
+  title: "Cavia"
+  page-navigation: false
+
+lang: pt-BR
+
+format:
+  html:
+    minimal: true
+    page-layout: custom
+    title-block-style: none
+    toc: false
+    css:
+      - assets/css/fontes.css
+      - assets/css/tokens.css
+      - assets/css/base.css
+      - assets/css/componentes.css
+      - assets/css/telas.css
+```
+
+## 5.2 Inclusões por pasta
+
+```yaml
+# arquivo: app/_metadata.yml
+include-in-header: ../_includes/head.html
+include-after-body: ../_includes/nav.html
+```
+
+```yaml
+# arquivo: entrada/_metadata.yml
+include-in-header: ../_includes/head.html
+```
+
+```html
+<!-- arquivo: _includes/head.html (telas em app/ e entrada/) -->
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#1E555C">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cavia">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
+<link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+<link rel="preload" href="../assets/fonts/figtree-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/fraunces-latin-full-normal.woff2" as="font" type="font/woff2" crossorigin>
+<script type="module" src="../assets/js/app.js"></script>
+```
+
+```html
+<!-- arquivo: _includes/head-raiz.html (só a index.qmd; mesmos itens, caminhos sem ../) -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1E555C">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cavia">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="icon" href="assets/icons/icon-192.png" type="image/png">
+<script type="module" src="assets/js/app.js"></script>
+```
+
+A `index.qmd` declara `include-in-header: _includes/head-raiz.html` no próprio cabeçalho YAML.
+
+`_includes/nav.html` é a barra inferior da seção 7.4, escrita como HTML puro. Os `href` são relativos a `app/` (`inicio.html`, `animais.html`, `registrar.html`, `perfil.html`). Quem marca o item ativo é o `ui.js`, lendo o `data-aba` da tela e pondo `aria-current="page"` no link certo.
+
+## 5.3 Pós-renderização
+
+O Quarto executa `.ts` com o Deno que já vem junto, então nada precisa ser instalado. O script troca a viewport e carimba o `sw.js` com a versão do cache e a lista de arquivos.
+
+```ts
+// arquivo: scripts/pos-render.ts
+// Roda depois de `quarto render` (project.post-render em _quarto.yml).
+// 1) troca a meta viewport do Quarto pela do app (viewport-fit=cover);
+// 2) carimba a versão do cache e a lista de arquivos no sw.js.
+
+const saida = Deno.env.get("QUARTO_PROJECT_OUTPUT_DIR") ?? "docs";
+const VIEWPORT =
+  '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">';
+
+function listar(dir: string): string[] {
+  const arquivos: string[] = [];
+  for (const item of Deno.readDirSync(dir)) {
+    const caminho = `${dir}/${item.name}`;
+    if (item.isDirectory) arquivos.push(...listar(caminho));
+    else arquivos.push(caminho);
+  }
+  return arquivos;
+}
+
+// 1) viewport
+for (const f of listar(saida).filter((f) => f.endsWith(".html"))) {
+  let html = Deno.readTextFileSync(f);
+  html = html.replace(/<meta name="viewport"[^>]*>\s*/g, "");
+  html = html.replace("</head>", `${VIEWPORT}\n</head>`);
+  Deno.writeTextFileSync(f, html);
+}
+
+// 2) service worker
+const ignorar = ["sw.js", "robots.txt", "sitemap.xml"];
+const arquivos = listar(saida)
+  .map((f) => f.slice(saida.length + 1))
+  .filter((f) => !ignorar.includes(f) && !f.endsWith(".map"))
+  .sort();
+
+const dados = new Uint8Array(
+  await new Blob(arquivos.map((f) => Deno.readFileSync(`${saida}/${f}`))).arrayBuffer(),
+);
+const digest = await crypto.subtle.digest("SHA-1", dados);
+const versao = [...new Uint8Array(digest)]
+  .map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 10);
+
+const swPath = `${saida}/sw.js`;
+const sw = Deno.readTextFileSync(swPath)
+  .replace("__VERSAO__", versao)
+  .replace("__ARQUIVOS__", JSON.stringify(arquivos.map((f) => `./${f}`), null, 2));
+Deno.writeTextFileSync(swPath, sw);
+console.log(`pos-render: ${arquivos.length} arquivos no cache, versão ${versao}`);
+```
+
+## 5.4 Modelo de uma tela
+
+Toda tela segue o mesmo molde: cabeçalho YAML mínimo, um contêiner `.tela` e o miolo gerado pelo JavaScript. Não repita HTML de componentes em dezenas de arquivos: monte-os com funções de `ui.js`.
+
+````markdown
+---
+pagetitle: "Registrar peso"
+---
+
+::: {.tela data-aba="registrar" data-tela="registrar-peso"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaRegistrarPeso } from "../assets/js/telas/registrar-peso.js";
+  telaRegistrarPeso(document.querySelector(".tela"));
+</script>
+```
+````
+
+- `data-aba` diz qual item da barra inferior fica ativo (`inicio`, `animais`, `registrar`, `perfil`). O `ui.js` lê esse atributo.
+- `data-tela` guarda o nome da imagem de referência, sem a extensão, para facilitar a conferência com a imagem em `_docs/`.
+- Telas de um animal ou de um grupo recebem o identificador por **parâmetro de URL** (`animal.html?id=...`), porque o site é estático e não existe uma página por animal.
+
+# 6. PWA
+
+## 6.1 Manifesto
+
+```json
+// arquivo: manifest.webmanifest
+{
+  "name": "Cavia",
+  "short_name": "Cavia",
+  "description": "Acompanhe a saúde e o bem-estar dos seus porquinhos-da-índia.",
+  "lang": "pt-BR",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF4EC",
+  "theme_color": "#1E555C",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
+```
+
+- A frase em `description` é uma sugestão; registre-a em `PENDENCIAS.md`.
+- Ícones: gere os PNGs a partir do SVG do **ícone do app** (versão preenchida da logo) em `assets/logo/`; se a designer não forneceu um ícone de app, **pergunte**. O maskable precisa de margem de segurança: a arte inteira dentro dos 80% centrais. Crie também `apple-touch-icon.png` (180 × 180). Pode usar `sharp` ou `rsvg-convert`, só como ferramenta de desenvolvimento.
+
+## 6.2 Service worker
+
+```js
+// arquivo: sw.js
+const VERSAO = "__VERSAO__";
+const CACHE = `cavia-${VERSAO}`;
+const ARQUIVOS = __ARQUIVOS__;
+
+self.addEventListener("install", (e) => {
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ARQUIVOS)));
+});
+
+self.addEventListener("activate", (e) => {
+  e.waitUntil(
+    caches.keys()
+      .then((ks) => Promise.all(
+        ks.filter((k) => k.startsWith("cavia-") && k !== CACHE).map((k) => caches.delete(k)),
+      ))
+      .then(() => self.clients.claim()),
+  );
+});
+
+self.addEventListener("message", (e) => {
+  if (e.data === "pular-espera") self.skipWaiting();
+});
+
+self.addEventListener("fetch", (e) => {
+  const req = e.request;
+  if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
+  e.respondWith(caches.match(req, { ignoreSearch: true }).then((hit) => hit || fetch(req)));
+});
+```
+
+- Os marcadores `__VERSAO__` e `__ARQUIVOS__` **não** são editados à mão: o `pos-render.ts` os substitui na saída. Não os remova do `sw.js` de origem.
+- Estratégia: o app inteiro entra no cache na instalação e as telas abrem do cache. Como a versão vem do conteúdo dos arquivos, qualquer mudança gera um cache novo e apaga o antigo.
+- `ignoreSearch: true` é necessário porque as telas usam `?id=` (`animal.html?id=...`).
+
+## 6.3 Registro e atualização (em `app.js`)
+
+- Registre o worker com `new URL("../../sw.js", import.meta.url)`, para o caminho valer em qualquer subpasta.
+- **Em desenvolvimento, não registre o worker** (`location.hostname === "localhost"` sem o parâmetro `?sw=1`). Um service worker em cache atrapalha a depuração. Para testar o PWA de verdade, sirva a pasta `docs/` (comando na seção 15) e abra com `?sw=1`.
+- Quando houver uma versão nova esperando (`registration.waiting`), mostre um aviso discreto: "Há uma versão nova do Cavia." com o botão "Atualizar". Ao tocar, envie `"pular-espera"` ao worker e recarregue quando o `controllerchange` disparar. Esse texto é uma sugestão (vai para `PENDENCIAS.md`).
+- Captura de instalação: no Android/Chrome, guarde o evento `beforeinstallprompt` e ofereça "Instalar o Cavia" na tela Sobre. No iPhone não existe esse evento: a instalação é por "Adicionar à Tela de Início" do Safari, e a tela Sobre pode explicar isso numa frase.
+- Se o navegador abrir o app fora do modo instalado, nada muda: o app funciona igual numa aba.
+
+## 6.4 Limites que você deve respeitar
+
+- **Notificações push reais ficam fora.** Elas exigem servidor e permissão do sistema. Se as imagens trouxerem um mockup de notificação na tela de bloqueio, ele é só de apresentação: **não o implemente**.
+- Armazenamento no navegador pode ser limpo pelo sistema. Por isso o modo de teste (seção 10.5) inclui "Restaurar dados de exemplo".
+- Não peça nenhuma permissão do navegador (localização, notificação, câmera) além do seletor de arquivo da foto.
+
+# 7. Design system
+
+Os valores abaixo vêm do design system do projeto (`tokens.json`). **Use sempre o nome do token.** Estes valores foram definidos antes das imagens do Figma. Se uma imagem usar cor, fonte ou medida **diferente** da que está aqui, **não escolha em silêncio**: liste a diferença no `TELAS.md`, pergunte à designer qual vale e registre a resposta em `DECISOES.md`. Para layout e conteúdo, a imagem sempre vale.
+
+## 7.1 Cores
+
+```css
+/* arquivo: assets/css/tokens.css */
+:root {
+  /* superfícies e texto */
+  --bg: #FFF4EC;               /* fundo das telas (concha) */
+  --surface: #FFFFFF;          /* cartões, barra de navegação, formulários */
+  --surface-sunken: #F6E9DD;   /* segmentado, trilha do interruptor, desativado */
+  --ink: #1E2B2D;
+  --ink-muted: #566664;
+  --line: #E8DCCF;             /* divisor de 1px, decorativo */
+  --line-strong: #857A6F;      /* borda de campos e contornos que precisam ser vistos */
+
+  /* marca (teal) */
+  --primary: #1E555C;
+  --primary-pressed: #173F45;
+  --on-primary: #FFFFFF;
+  --primary-soft: #DCEBE9;
+
+  /* rosa: botão Registrar, destaques afetivos */
+  --action: #C98686;           /* só preenchimento; nunca texto */
+  --action-pressed: #D6A0A0;   /* clareia ao pressionar */
+  --on-action: #1E2B2D;
+  --rose-soft: #F7E4E1;
+  --rose-ink: #8F4247;
+
+  /* verde-folha: alimentação, ambiente */
+  --leaf: #899878;             /* só preenchimento */
+  --leaf-soft: #E6ECDD;
+  --leaf-ink: #52633F;
+
+  /* lavanda: saúde e medicamentos */
+  --lavender: #966B9D;
+  --lavender-soft: #EEE5F0;
+  --lavender-ink: #71477A;
+
+  /* âmbar: atenção moderada */
+  --warn: #F2A93B;
+  --warn-soft: #FFE9C2;
+  --warn-ink: #6B4300;
+
+  /* vermelho: SÓ urgência e erro */
+  --danger: #A82A22;
+  --danger-soft: #FBE1DE;
+  --on-danger: #FFFFFF;
+
+  /* status positivo */
+  --ok: var(--leaf-ink);
+  --ok-soft: var(--leaf-soft);
+
+  /* espaçamento */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px;
+  --space-4: 16px; --space-5: 24px; --space-6: 32px;
+
+  /* raios */
+  --radius-sm: 10px;   /* chips */
+  --radius-md: 16px;   /* campos, avisos */
+  --radius-lg: 22px;   /* cartões, segmentado, navegação */
+  --radius-xl: 28px;   /* cantos inferiores do cabeçalho */
+  --radius-pill: 999px;
+
+  /* sombras */
+  --shadow-card: 0 1px 2px rgba(30,43,45,.10);
+  --shadow-nav: 0 -2px 12px rgba(30,43,45,.08);
+  --shadow-fab: 0 4px 10px rgba(143,66,71,.30);
+  --shadow-sheet: 0 -4px 20px rgba(30,43,45,.18);
+  --shadow-focus: 0 0 0 2px #ffffff, 0 0 0 4px #1e2b2d;
+
+  /* tamanhos */
+  --size-touch: 44px;
+  --size-row: 52px;
+  --size-button: 56px;
+  --size-nav: 84px;
+  --size-icon: 22px;
+  --size-avatar: 52px;
+
+  /* fontes */
+  --font-corpo: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-titulo: "Fraunces", Georgia, serif;
+}
+```
+
+**Papéis das cores:** `primary` é a marca (cabeçalho, botão principal, aba ativa, link, interruptor ligado). `action` é só o botão Registrar. `leaf` é alimentação e ambiente. `lavender` é saúde e medicamentos. `warn` é atenção moderada. `danger` é urgência e erro, **nada mais**.
+
+## 7.2 Tipografia
+
+O design system usa **Fraunces** nos títulos de tela e nos números grandes, e **Figtree** em todo o resto (confira com as imagens). (O arquivo `tokens.json` do design system ainda lista Nunito: **ignore**, está desatualizado.)
+
+- Fraunces: pesos 600 a 800, eixos `opsz` 36 e `SOFT` 100 (títulos arredondados e suaves).
+- Figtree: pesos 400, 600, 700 e 800.
+
+```css
+/* arquivo: assets/css/fontes.css */
+@font-face {
+  font-family: "Figtree";
+  src: url("../fonts/figtree-latin-wght-normal.woff2") format("woff2-variations");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fraunces";
+  src: url("../fonts/fraunces-latin-full-normal.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+```
+
+**Como obter as fontes (uma vez, em desenvolvimento):** instale `@fontsource-variable/figtree` e `@fontsource-variable/fraunces` com npm, em uma pasta temporária fora do projeto, e copie para `assets/fonts/` somente `figtree-latin-wght-normal.woff2` e `fraunces-latin-full-normal.woff2` (o subconjunto *latin* cobre todos os acentos do português). Ambas são licenciadas OFL-1.1. O arquivo "full" do Fraunces traz todos os eixos, inclusive `opsz` e `SOFT`.
+
+Escala (use pelo nome; tamanho, altura de linha, peso):
+
+| Estilo | Uso | Tamanho / linha / peso |
+|---|---|---|
+| `heading-1` | nome do animal ou do grupo | 24 / 28 / 800 |
+| `heading-2` | título de tela sem cabeçalho de animal | 20 / 26 / 800 |
+| `title` | título de cartão e de seção | 16 / 22 / 800 |
+| `body` | texto corrido e valores | 14 / 20 / 600 |
+| `body-strong` | valores de linha e links de cartão | 14 / 20 / 800 |
+| `small` | avisos, dicas, apoio | 13 / 18 / 600 |
+| `label` | chips, rótulos de campo e da navegação | 12 / 16 / 700 |
+| `caption` | legenda sem informação essencial (mínimo do sistema) | 11 / 14 / 600 |
+| `figure` | peso e outros valores em destaque | 26 / 30 / 800 |
+| `button` | texto de botão | 16 / 20 / 800 |
+
+Os títulos de tela nas imagens de referência usam 24 a 26 px. Nunca use texto abaixo de 11 px. Respeite o aumento de fonte do sistema (até 200% sem cortar texto): contêineres crescem em altura.
+
+## 7.3 Layout
+
+- O tamanho de quadro esperado é **390 × 844**; confirme nas imagens. No celular, o app ocupa a largura toda. Em tela maior (computador), centralize uma coluna de no máximo 430 px sobre `--bg`, com a barra inferior presa a essa coluna.
+- Margem lateral `space-4` (16 px); espaço entre cartões `space-3` (12 px); entre seções `space-5` (24 px).
+- Cartões em `surface`, `radius-lg`, `shadow-card`, **sem borda**. Divisor interno de 1 px em `line`.
+- Conteúdo rola; a barra inferior fica presa à base (`position: fixed`) com altura `size-nav` mais `env(safe-area-inset-bottom)`. Reserve esse espaço no fim do conteúdo.
+- Campos têm borda `line-strong` e altura mínima `size-row` (52 px).
+
+## 7.4 Barra inferior
+
+- Confira com as imagens; se forem diferentes, siga as imagens. Quatro itens: `Início`, `Animais`, `Registrar`, `Perfil`. Fundo `surface`, cantos superiores 22/24 px, `shadow-nav`, altura 84 px.
+- Item ativo: ícone dentro de uma pílula `primary-soft`, traço 2,2 px, rótulo em `primary`, peso 800. Itens inativos: traço 1,8 px, `ink-muted`, peso 600.
+- **Registrar** fica elevado no centro (margem superior de −30 px): círculo de 58 px em `action`, borda branca de 4 px, `shadow-fab`, ícone de "+" em `ink`, rótulo em `rose-ink` peso 800.
+- A barra é um `<nav aria-label="Principal">` com `<a>`; o item atual leva `aria-current="page"`. Cada alvo tem no mínimo 44 px.
+- As telas de entrada (abertura, boas-vindas, entrar, criar conta) **não** têm barra inferior.
+
+## 7.5 Componentes
+
+Classes com prefixo `ds-`, em `componentes.css`, lendo os tokens. **Antes de criar um componente novo, veja se um destes resolve.** Se a imagem mostrar um componente que não está aqui, crie-o com os tokens, no mesmo padrão `ds-`, e registre em `DECISOES.md`.
+
+| Componente | Anatomia e estados |
+|---|---|
+| `ds-button` | Principal: fundo `primary`, texto branco, 56 px, pílula, pressionado `primary-pressed`. Registrar: fundo `action`, texto `ink`, pressionado `action-pressed`. Secundário: `primary-soft` com texto `primary`. Desativado: `surface-sunken` com `ink-muted` e o motivo escrito perto. |
+| `ds-chip` | `radius-sm`, texto `label`. Variantes: informativo (`primary-soft` + `primary`), estável (`ok-soft` + `ok`, com check), atenção (`warn-soft` + `warn-ink`, com triângulo), urgente (`danger` + `on-danger`, com círculo e exclamação), afetivo (`rose-soft` + `rose-ink`), saúde (`lavender-soft` + `lavender-ink`), alimentação (`leaf-soft` + `leaf-ink`). |
+| `ds-notice` | Aviso em cartão com ícone redondo de 40 px. Atenção: fundo `warn-soft`, ícone sobre `warn`. Urgente: `danger-soft`, texto `danger`, **sempre com ícone e texto direto**. Dica: `leaf-soft`, ícone sobre `leaf`, título em `leaf-ink`. |
+| `ds-card` | `surface`, `radius-lg`, `shadow-card`, padding 14 a 18 px. |
+| `ds-segmented` | Fundo `surface-sunken`, `radius-lg`; opção ativa em `surface`. Semântica: `role="tablist"` quando troca de painel, `role="radiogroup"` quando escolhe um valor. |
+| `ds-header` | Cabeçalho teal curvo nos perfis (cantos inferiores `radius-xl`); nas demais telas, botão voltar de 44 px redondo em `surface`, sobrerrótulo `ink-muted` e `h1`. |
+| `ds-field` | Rótulo `label` acima, campo com borda `line-strong`, mensagem de erro com ícone em `danger` sobre `danger-soft`. |
+| `ds-switch` | Ligado `primary`; trilha desligada `line-strong`; área de toque de 44 px. |
+| `ds-avatar` | Círculo com o porquinho; 3 pelagens-base e marcas montáveis. Ao lado, o avatar de grupo sobrepõe até 3 avatares com −10 px. Decorativo: `aria-hidden="true"`. |
+
+**Avatar (modelo base).** Todas as pelagens usam o mesmo desenho (viewBox 64); mudam só as cores, passadas por variáveis CSS:
+
+```html
+<svg viewBox="0 0 64 64" aria-hidden="true" class="ds-avatar">
+  <circle cx="32" cy="32" r="32" fill="var(--av-fundo)"/>
+  <ellipse cx="16" cy="25" rx="7" ry="8" fill="var(--av-orelha)"/>
+  <ellipse cx="48" cy="25" rx="7" ry="8" fill="var(--av-orelha)"/>
+  <ellipse cx="32" cy="38" rx="20" ry="18" fill="var(--av-pelo)"/>
+  <path d="M32 22c-5 6-4 13-2 17h4c2-4 3-11-2-17z" fill="var(--av-marca)"/>
+  <circle cx="23" cy="36" r="2.6" fill="var(--av-olho)"/>
+  <circle cx="41" cy="36" r="2.6" fill="var(--av-olho)"/>
+  <ellipse cx="32" cy="45" rx="3.4" ry="2.4" fill="var(--av-nariz)"/>
+</svg>
+```
+
+Pelagens propostas (se as imagens mostrarem outras, use as das imagens): **caramelo** (fundo `#DCEBE9`, orelha `#A9692F`, pelo `#C98B4E`, marca `#FFF8EC`, nariz `#7A3E2B`), **creme** (fundo `#FFF3D6`, orelha `#D9BE93`, pelo `#F1E1C6`, marca `#FFFFFF`) e **chocolate** (fundo `#E6E1F2`, orelha `#4F3B2C`, pelo `#6B5240`, marca `#F6EBDD`, olhos `#F6EBDD`, nariz `#F2B8A0`). Olho padrão: `#1E2B2D`. As cores de avatar são ilustração, não tokens do sistema; guarde-as em `ui.js`.
+
+## 7.6 Ícones, movimento e estados
+
+- Ícones de linha desenhados em 24 × 24, traço de 2 px (1,8 px nos itens inativos da navegação), pontas e cantos arredondados, exibidos a 22 px com `currentColor`. **Sem ícones preenchidos e sem emoji.** Reúna os SVGs em `icones.js` (um mapa nome → caminho). Deve combinar com o traço dos ícones das imagens; a biblioteca Lucide (licença ISC) pode ser a base se o estilo casar, copiando só os SVGs usados.
+- Quando um ícone carrega significado (check, triângulo, exclamação), a **palavra vem junto**.
+- Foco: `shadow-focus` (anel de 2 px branco e 2 px `ink`), sempre visível. Pressionado: `primary-pressed` e `action-pressed`.
+- Movimento: transições de **até 150 ms**, saída suave. Com `prefers-reduced-motion: reduce`, sem animação. Troca de tela com transição entre documentos (`@view-transition`) é um extra opcional; só ative com a regra de movimento reduzido respeitada.
+
+# 8. Acessibilidade (critérios de aceite)
+
+Meta: contraste 4,5:1 para texto comum e 3:1 para texto grande (24 px, ou 19 px em negrito), ícones e contornos com significado. Estes critérios são **bloqueantes**: uma tela só está pronta se passar.
+
+**Pares aprovados:** `ink` sobre `bg` (13,5:1), `surface` (14,6:1); `ink-muted` sobre `bg` (5,6:1); `on-primary` sobre `primary` (8,4:1); `primary` sobre `bg` (7,7:1); `ink` sobre `action` (5,0:1), `leaf` (4,7:1) e `warn` (7,3:1); `leaf-ink` sobre `leaf-soft`; `rose-ink` sobre `rose-soft`; `lavender-ink` sobre `lavender-soft`; `warn-ink` sobre `warn-soft`; `danger` sobre `danger-soft`; `on-danger` sobre `danger`.
+
+**Combinações proibidas:**
+
+- `action`, `leaf` ou `warn` como **cor de texto** ou ícone sobre fundo claro. Use `rose-ink`, `leaf-ink`, `warn-ink`.
+- Texto **branco** sobre `action` ou `leaf`. Use `ink`.
+- `ink` sobre `lavender`.
+- Texto branco sobre `lavender` abaixo de 19 px em negrito.
+- Usar `action` (rosa) e `leaf` (verde) para distinguir dois estados: para quem tem daltonismo vermelho-verde eles se confundem.
+
+**Regras gerais:**
+
+1. Toda área de toque tem **no mínimo 44 × 44 px** (`size-touch`); o botão principal tem 56 px.
+2. Status leva sempre **ícone, palavra e cor**: Estável (check), Atenção (triângulo), Urgente (círculo com exclamação).
+3. Foco visível em todos os controles, na ordem de leitura.
+4. Botões só de ícone levam `aria-label`. Avatares decorativos levam `aria-hidden="true"`.
+5. `<html lang="pt-BR">`; um único `<h1>` por tela, que é o título da tela.
+6. Formulários: cada campo com `<label>` associado, `inputmode` correto (`numeric` para o peso), erro descrito em texto e ligado ao campo por `aria-describedby`.
+7. Pop-ups (toda janela que sobe sobre a tela nas imagens) são **`<dialog>` com `showModal()`**: o foco fica preso, `Esc` fecha, o foco volta ao botão que abriu, e o título é ligado por `aria-labelledby`. No celular aparecem como folha que sobe da base (`shadow-sheet`).
+8. Gráficos em SVG têm `role="img"` e `aria-label` com a leitura em palavras (por exemplo, "Peso subiu de 1.000 g para 1.020 g em 4 semanas"), mais a tabela de dados acessível quando cabível.
+9. Zoom de 200% e fonte do sistema ampliada não podem cortar texto nem esconder botões.
+10. Nunca bloqueie o zoom do navegador.
+
+# 9. Conteúdo e microcopy
+
+## 9.1 Tom e regras de escrita
+
+- Português do Brasil, tratando por **"você"**, em frases curtas. Iniciais maiúsculas só no começo da frase (`Registrar alimentação`, `Ver dieta da semana`).
+- **Botões começam com verbo**: `Salvar`, `Confirmar`, `Exportar histórico`, `Fazer ›`. Nada de "OK" ou "Enviar".
+- Rótulos fixos da navegação: `Início`, `Animais`, `Registrar`, `Perfil`.
+- **Sem emoji, sem exclamação, sem gíria.** A leveza vem de frases simples e de verbos concretos.
+- Datas em linguagem do dia a dia: `hoje`, `amanhã`, `dose às 08:00`. Peso em gramas, com ponto de milhar: `1.020 g` (use `Intl.NumberFormat("pt-BR")`).
+- Valor que falta: `Não informado`, em `ink-muted`.
+- Aviso urgente diz o que fazer, em uma frase: `Urgente: procure um veterinário`. Erro de campo diz o que corrigir: `O valor parece alto. Confira se está em gramas.`
+- Termos fixos: **Observação** (Registrar) e **Diário** (Animais) são o mesmo conteúdo; **Alertas de atenção** (nunca "emergência"); **Dicas para o seu grupo**; **Sintomas e ocorrências**; **Consulta ou exame**; **Tratamento ou medicação**; **Cuidados do grupo**; **Dieta e alimentação**; **Ambiente e limpeza**.
+
+## 9.2 Origem dos textos
+
+1. Texto que aparece na imagem de referência é **texto final**: copie.
+2. Texto entre `[colchetes]` na imagem é **exemplo de conteúdo**: troque por um exemplo realista e fictício, e registre em `PENDENCIAS.md`. Nunca deixe `[colchetes]` visíveis no app.
+3. Texto que não está na imagem nem aqui: escreva no tom da seção 9.1, marque em `PENDENCIAS.md` e **não** use afirmações clínicas.
+
+## 9.3 Conteúdo clínico
+
+Todo texto clínico precisa de revisão veterinária antes de valer: tipos de fezes e urina, sinais de urgência, itens do check-up e suas orientações, frequências e valores nutricionais dos alimentos, limite de variação do peso, e o "o que fazer" dos alertas. Para o protótipo:
+
+- Guarde esse conteúdo em arquivos de dados separados (`assets/js/conteudo/*.js`), **nunca espalhado pelas telas**.
+- Cada item clínico leva `revisao: "pendente"`. Com `?teste=1`, itens pendentes aparecem com um sublinhado pontilhado discreto (só no modo de teste) para a designer ver o que falta validar.
+- Onde a imagem de referência traz a lista (por exemplo, os tipos de fezes), use a lista da imagem. Não complete listas por conta própria.
+- **Nenhum texto sugere dose, marca, tratamento caseiro ou diagnóstico.** O app "registra e orienta".
+
+## 9.4 Regras de alerta (provisórias)
+
+As regras reais dependem de fonte veterinária. No protótipo, concentre-as em `assets/js/regras.js`, com constantes nomeadas e comentário `// PROVISÓRIO: não é recomendação clínica`:
+
+- **Alerta de observação:** comparar a observação do dia (apetite, fezes, urina, comportamento) com o padrão dos últimos registros do animal. Uma mudança relevante gera um alerta no Início, com o "o que fazer" ligado a ele.
+- **Alerta de peso:** comparar o peso novo com o histórico do animal. Uma queda acima do limite provisório gera alerta (limite em constante).
+- **Aviso de conferência do peso:** valor muito fora do histórico mostra `O valor parece alto. Confira se está em gramas.` (limite em constante).
+- **Sintomas e ocorrências:** **nunca** geram alerta. Sinais de urgência aparecem com orientação na própria tela.
+- **Check-up:** itens marcados como "estranhos" geram "item com atenção" com o "o que fazer".
+
+O app deve funcionar também sem nenhum alerta: o cartão de alertas **só aparece quando há alerta**.
+
+## 9.5 Dicas para o seu grupo
+
+O cartão de dicas do Início se adapta ao que o tutor cadastrou (por exemplo, logo após cadastrar um animal novo). Crie 6 a 10 dicas curtas, fictícias e sem afirmação clínica, com a regra de exibição de cada uma. Registre todas em `PENDENCIAS.md`.
+
+## 9.6 Lembretes simulados
+
+- Lembretes aparecem na lista do Início e na tela de lembretes. Não há notificação do sistema.
+- No modo de teste, o botão "Simular lembrete" mostra um aviso na tela, para demonstrar a ideia da notificação.
+- Lembretes personalizados: obrigatórios `O que lembrar`, `Para` (animal ou grupo) e `Quando`; opcionais `Repetir`, `Avisar` e `Anotação`. Opções: concluir, adiar, editar, excluir.
+- Em aberto (use a proposta e registre): lembrete personalizado respeita o horário de silêncio (proposta: sim); ao editar ou excluir um lembrete que se repete, vale só para este ou para os próximos também (**pergunte**, mostrando as duas opções no pop-up das opções).
+
+# 10. Dados e estado
+
+## 10.1 Princípios
+
+- Um único módulo `store.js` lê e grava no `localStorage`, sob a chave `cavia:v1`. **As telas nunca acessam o `localStorage` direto.**
+- O estado tem **versão** (`{ versao: 1, ... }`) e uma função de migração, para o esquema poder mudar sem perder dados.
+- Toda gravação e leitura fica em `try/catch` (o navegador pode bloquear o armazenamento). Se falhar, mostre um aviso claro e deixe o app funcionar em memória.
+- Identificadores com `crypto.randomUUID()`. Datas como texto `AAAA-MM-DD` (dia local) e instantes como ISO 8601. Peso em **gramas inteiras**.
+- O store oferece `obter()`, `atualizar(fn)`, `assinar(fn)` (as telas se redesenham quando o estado muda), `zerar()` e `carregarExemplo()`.
+- O "hoje" passa por uma função (`hoje()`), nunca por `new Date()` direto, para o modo de teste poder simular outro dia.
+
+## 10.2 Modelo
+
+```json
+{
+  "versao": 1,
+  "conta": { "nome": "", "email": "", "criadaEm": "" },
+  "config": { "silencio": { "ativo": false, "de": "22:00", "ate": "07:00" }, "notificacoes": {} },
+  "grupos": [{ "id": "", "nome": "", "animais": ["id"], "dieta": {}, "ambiente": {} }],
+  "animais": [{
+    "id": "", "nome": "", "grupoId": "", "sexo": "", "nascimento": "", "raca": "", "cor": "",
+    "origem": "", "marcas": "", "observacoes": "", "arquivado": false,
+    "avatar": { "pelagem": "caramelo", "marcas": [] }, "foto": null
+  }],
+  "pesagens": [{ "id": "", "animalId": "", "data": "AAAA-MM-DD", "gramas": 0 }],
+  "observacoes": [{
+    "id": "", "alvo": "animal|grupo", "alvoId": "", "animalAtribuidoId": null,
+    "data": "", "apetite": "", "fezes": "", "urina": "", "comportamento": "", "agua": "", "nota": ""
+  }],
+  "alimentacao": [{ "id": "", "grupoId": "", "data": "", "alimentos": ["id"], "feno": false, "racao": false }],
+  "cuidadosGrupo": [{ "id": "", "grupoId": "", "tipo": "", "data": "" }],
+  "checkups": [{ "id": "", "animalId": "", "data": "", "itens": { "olhos": "normal" } }],
+  "checkupFrequencia": { "padraoDias": 7, "porAnimal": {} },
+  "sintomas": [{ "id": "", "animalId": "", "data": "", "sintomas": [], "nota": "", "foto": null }],
+  "consultas": [{ "id": "", "animalId": "", "data": "", "clinica": "", "motivo": "", "orientacao": "", "pesoGramas": null, "retorno": "" }],
+  "tratamentos": [{ "id": "", "animalId": "", "nome": "", "dose": "", "vezesPorDia": 1, "horarios": [], "inicio": "", "dias": 0 }],
+  "lembretes": [{
+    "id": "", "titulo": "", "alvo": "animal|grupo", "alvoId": "", "quando": "", "repetir": "nunca",
+    "avisar": "", "anotacao": "", "tipo": "personalizado|checkup|dose|consulta|limpeza", "concluido": false
+  }]
+}
+```
+
+- `tratamentos[].dose` é **texto livre copiado da receita**; o app nunca calcula nem sugere dose.
+- Mudar o peso numa consulta (`consultas[].pesoGramas`) também cria uma entrada em `pesagens` (regra do projeto: o peso informado na consulta também entra na aba Peso).
+- Arquivar um animal não apaga o histórico; ele sai das listas e aparece em Perfil > Conta > Animais arquivados, com opção de restaurar.
+- Excluir a conta apaga **todos** os dados locais, depois de confirmação em pop-up.
+- Fotos: reduza a 256 px no maior lado e salve como JPEG (data URL, por volta de 30 KB). Trate o erro de cota do `localStorage`.
+
+## 10.3 Dados de exemplo (`seed.js`)
+
+Todo nome, peso e data de exemplo é **fictício**. Crie:
+
+- 1 conta de exemplo e 2 grupos, com 4 animais no total (por exemplo, Pipoca e Amora num grupo, mais um casal em outro), cada um com uma pelagem diferente.
+- 8 a 12 semanas de pesagens por animal. Em **um** animal, uma queda gradual nas últimas semanas, para o alerta de peso aparecer no Início.
+- Observações diárias dos últimos 14 dias, com **uma** mudança de apetite recente num animal, para o alerta de observação aparecer.
+- Um check-up que vence **hoje**, uma dose agendada, uma consulta amanhã, uma limpeza do grupo hoje e um lembrete personalizado.
+- Alguns alimentos registrados na semana, para a Dieta da semana.
+
+## 10.4 Formatação
+
+Todas as datas e números passam por `formato.js` (`dataRelativa`, `dataLonga`, `gramas`, `idade`). Nenhuma tela formata data ou peso por conta própria.
+
+## 10.5 Modo de teste
+
+Com `?teste=1` na URL, aparece um painelzinho recolhível, que **nunca** aparece sem esse parâmetro:
+
+- `Restaurar dados de exemplo` e `Zerar dados` (com confirmação);
+- `Dia simulado`: escolher a data de "hoje", para testar "vence hoje", o check-up semanal e os lembretes;
+- `Simular lembrete`;
+- `Destacar conteúdo a validar` (a marcação da seção 9.3);
+- `Ver versão` (o hash do service worker).
+
+O parâmetro `?teste=1` fica salvo em `sessionStorage` durante a sessão, para não se perder entre as telas.
+
+# 11. Fluxos centrais (critérios de aceite do teste de usabilidade)
+
+Estes quatro fluxos vêm da arquitetura de informação. Confira nas imagens como cada passo foi desenhado e siga o desenho. Cada um precisa funcionar do início ao fim, com os dados de exemplo e também com o app zerado.
+
+| Fluxo | Caminho | Critério |
+|---|---|---|
+| **1. Registrar o peso** | Registrar > Peso > escolher o animal > digitar o peso > Confirmar | No máximo **4 toques** até confirmar, mais a digitação. Se o animal não existe, "Cadastrar" leva ao cadastro do animal e **volta à mesma tela**. Depois de confirmar: confirmação clara e o novo ponto no gráfico. |
+| **2. Da observação diária ao alerta** | Registrar > Observação > salvar | Ao salvar, o app compara com os registros anteriores. Se houver mudança relevante, o alerta e o "o que fazer" aparecem em **Início**. Se não houver, nenhum alerta. |
+| **3. Cadastrar o grupo e fazer o primeiro registro** | Animais > Criar grupo (só o nome) > Cadastrar animal (nome e grupo) > Registrar | Só nome e grupo são obrigatórios. O Início passa a mostrar dicas adaptadas ao que acabou de ser cadastrado. O fluxo termina no primeiro registro. |
+| **4. Exportar o histórico para o veterinário** | Perfil > Exportar histórico > escolher animal ou grupo, período e o que incluir > prévia > exportar | 5 passos. A prévia tem a logo no cabeçalho e imprime bem em A4 (`@media print`); "Salvar PDF" chama `window.print()`. Uma confirmação mostra que ficou pronto. |
+
+# 12. Telas: como partir das imagens do Figma
+
+As telas foram desenhadas pela designer no Figma e exportadas como imagens. **Elas são a referência de cada tela.** Este arquivo não traz uma lista de telas: traz o **método** para transformar as imagens em páginas (seções 12.1 a 12.3) e o **comportamento esperado de cada funcionalidade** (seção 12.4). Se uma imagem mostrar algo diferente do que está escrito aqui, **siga a imagem** e registre a diferença em `DECISOES.md`.
+
+## 12.1 Onde estão as imagens e como lê-las
+
+- Ficam **na mesma pasta deste arquivo** (`_docs/`), direto nela ou em subpastas. Formatos possíveis: PNG, JPG, WebP, SVG ou PDF (num PDF, use o parâmetro de páginas da ferramenta Read).
+- **Não suponha nomes, numeração nem quantidade.** Liste a pasta e abra **todas** as imagens com a ferramenta Read antes de planejar qualquer coisa.
+- O nome do arquivo, sem a extensão, é o nome da tela e vai em `data-tela` (seção 5.4).
+- Uma imagem pode ter **várias telas lado a lado** (visão geral). Se algum detalhe (texto, medida, ícone, cor) não estiver legível, peça à designer o export individual: um quadro por arquivo, PNG em 2×.
+- Você **não consegue abrir links do Figma** (exigem login). Se a designer colar um link, peça os exports.
+- Imagem que não mostra uma tela (referência de estilo, rascunho, logo) não vira página: use só como apoio visual.
+- Várias imagens do mesmo quadro em **estados diferentes** (vazio, preenchido, com erro, com pop-up aberto) são **a mesma página**. Se houver **alternativas** da mesma tela ("opção 1, 2, 3"), **pergunte qual adotar** e implemente só a escolhida.
+
+## 12.2 Inventário das telas (`TELAS.md`)
+
+Antes de escrever código, crie `TELAS.md` na raiz com uma linha por tela (não por imagem):
+
+| Imagem | Tela | Seção (barra inferior) | Arquivo | Prioridade | Fluxo | Observações |
+|---|---|---|---|---|---|---|
+
+- Agrupe por seção da barra inferior (`Início`, `Animais`, `Registrar`, `Perfil`) e pela pasta (`entrada/` ou `app/`).
+- Liste também as **funcionalidades da seção 12.4 que não têm imagem**, com o estado `sem imagem` (seção 12.5).
+- No fim do arquivo, anote as **divergências** entre as imagens e este arquivo: nome de seção diferente na barra inferior, cores ou fontes que não batem com a seção 7, componentes que não existem na seção 7.5, funcionalidades desenhadas que não estão aqui.
+- **Mostre o `TELAS.md` à designer e espere a confirmação** antes de começar o esqueleto do site. Ela pode ter mudado de ideia sobre o que entra.
+
+## 12.3 Prioridade
+
+Proponha e peça confirmação:
+
+- **P0:** telas necessárias para os 4 fluxos centrais (seção 11) e para a navegação principal.
+- **P1:** o resto do app que aparece nas imagens.
+- **P2 (não implementar):** alternativas não escolhidas, mockups de apresentação (notificação na tela de bloqueio, ícone na tela inicial, imagem de apresentação do app) e qualquer imagem que seja só ilustração.
+
+## 12.4 Comportamento esperado por funcionalidade
+
+Descrição do **comportamento**, sem layout. O visual, a ordem dos elementos e os textos vêm da imagem. `F` mais número é o código da funcionalidade no inventário do TCC.
+
+| Funcionalidade | Comportamento esperado |
+|---|---|
+| **Abertura** (`index.qmd`) | Logotipo vertical em `primary` sobre `bg`. Aparece só na abertura fria do app (use `sessionStorage` para não repetir ao voltar), por tempo curto (**[tempo a definir]**; use 1,5 s e registre). Depois: sem conta vai às boas-vindas; com conta vai ao Início. |
+| **Boas-vindas, Entrar, Criar conta** (`entrada/`, sem barra inferior) | Boas-vindas oferecem `Criar conta` e `Entrar`. Entrar: e-mail e senha; qualquer entrada com formato válido entra; **não guarde a senha**. Criar conta: nome, e-mail e senha (só validação de formato) e leva ao cadastro do primeiro animal. Termos de uso e Política de privacidade com texto-modelo marcado como pendente (revisão jurídica, LGPD). |
+| **Início** | Seletor de grupo; resumo do grupo (animais, última limpeza, última observação); aviso de **Alertas de atenção só quando houver alerta**, com link para o "o que fazer"; lembretes e tarefas (marcar como feito, atalho para fazer o check-up, criar lembrete); **Dicas para o seu grupo** (seção 9.5). Estado vazio dos primeiros dias: se a imagem não mostrar, **pergunte**. |
+| **Registrar** (central da barra inferior) | Atalhos para cada tipo de registro. O de check-up mostra um aviso de atenção quando está vencido. |
+| **Peso** | Escolher o animal (com atalho para cadastrar, que **volta à mesma tela**); campo numérico em gramas (`inputmode="numeric"`); último peso e data; minigráfico; data (`Hoje` ou outra); `Confirmar`. Mantenha a entrada do peso num **componente isolado**, para poder trocar de variação depois. |
+| **Observação** | Registro por animal ou por grupo. Fezes e urina por **tipo** (use a lista da imagem). Água é registro **do grupo**. Em grupo, dá para associar a observação a um animal quando houver suspeita (F14). Ao salvar, vale o Fluxo 2. |
+| **Alimentação** | Registro por **grupo**: feno, ração e vegetais e frutas do dia. Cada alimento mostra informação nutricional e a frequência sugerida por semana; se a imagem trouxer aviso ao passar do sugerido, implemente. Conteúdo com `revisao: "pendente"`. |
+| **Sintomas e ocorrências** | Anotar algo fora do normal, com foto opcional. **Não gera alerta.** Sinais de urgência mostram orientação direta na própria tela. |
+| **Consulta ou exame** | Data, veterinário ou clínica, motivo, orientação recebida, peso na consulta (entra também em Pesagens), anexo opcional, retorno com lembrete. |
+| **Tratamento ou medicação** | Nome, dose **como está na receita** (texto livre), vezes por dia, horários, duração, lembrete de cada dose. Sem sugestão de dose. |
+| **Cuidados do grupo** | Feno, ração, troca de água, lavagem do bebedouro e limpeza (do dia, troca do forro, geral), com a data da última vez. |
+| **Check-up de saúde** | Roteiro: olhos, orelhas, nariz, boca e dentes, pele e pelo, caroços e barriga, patas e unhas, parte de trás e peso (use a lista da imagem). Tudo começa como normal; o tutor marca só o que estranhar e recebe o "o que fazer". Frequência configurável, **semanal por padrão**. |
+| **Animais** | Lista **por grupo**, com os animais dentro de cada grupo. Ações: cadastrar animal e criar grupo. |
+| **Perfil do animal** | Cabeçalho com avatar, nome e **tags** de idade, sexo e raça (sem peso). Conteúdo organizado como a imagem mostrar (abas, por padrão): **Dados** (editar, arquivar e restaurar), **Peso** (registro e gráfico SVG, F03), **Diário** (calendário de 7 dias, detalhe do dia, visão de 30 dias; observações, fezes e urina por tipo, comportamento), **Check-up** (resumo, histórico, item com atenção, frequência) e **Saúde** (consultas, exames, tratamentos, sinais de alerta). |
+| **Cadastrar animal** | Só **nome e grupo** são obrigatórios. Foto por `<input type="file" accept="image/*">` (reduzir e salvar) ou avatar montável (pelagem e marcas, com prévia ao vivo). |
+| **Criar grupo** | Só o nome; os integrantes entram depois. |
+| **Perfil do grupo** | Integrantes; dieta e alimentação (com a dieta da semana: variedade, vitamina C, alimentos acima do sugerido); ambiente e limpeza. |
+| **Perfil** (barra inferior) | Lista de Conta, Notificações, Exportar histórico e Sobre o Cavia, com a versão. |
+| **Conta** | Nome, e-mail, senha (sem guardar), foto, animais arquivados, sair e **excluir conta** (confirmação antes). |
+| **Notificações** | Ajuste por tipo, **horário de silêncio** e acesso aos lembretes personalizados. Em aberto: alertas de atenção e doses ignoram o silêncio? Use "ignoram" (a confirmar) e **registre**. |
+| **Exportar histórico** | Escolher animal ou grupo, período e o que incluir; prévia com a logo no cabeçalho e estilos de impressão (`@media print`); `Salvar PDF` chama `window.print()`; confirmação de que ficou pronto. |
+| **Lembretes** | Lista, criação e opções (concluir, adiar, editar, excluir). Ver seção 9.6. |
+| **Sobre o Cavia** | Versão, aviso de que o app **não substitui o veterinário**, fontes do conteúdo e quem faz a revisão veterinária (**[a definir]**), Termos de uso e Política de privacidade (**[revisão jurídica pendente]**), instalar o app. |
+
+## 12.5 Quando falta a imagem
+
+- Funcionalidade da seção 12.4 sem imagem: **não construa nem invente o visual.** Marque `sem imagem` no `TELAS.md` e pergunte à designer se ela vai desenhar ou se corta do protótipo.
+- Tela que aparece nas imagens mas não está na seção 12.4: construa conforme a imagem, com os componentes e tokens da seção 7, e registre em `DECISOES.md`.
+- Estado que falta numa tela (vazio, erro, carregando): faça o mais simples com os componentes existentes, na linguagem da seção 9, e registre.
+
+## 12.6 Fora do escopo
+
+- Alternativas não escolhidas e mockups de apresentação (seção 12.3).
+- **F20** (anexar fotos e documentos): só a foto opcional que já aparece nos formulários; sem gerenciador de anexos. **F21** (busca de conteúdos): cortada.
+- Notificação push real (seção 6.4).
+
+# 13. Fases de trabalho
+
+Termine cada fase com: `quarto render` sem avisos, o checklist abaixo, um commit e um resumo curto para a designer.
+
+| Fase | Entrega | Pronto quando |
+|---|---|---|
+| **0. Inventário** | Leitura de todas as imagens, `TELAS.md`, comparação entre as imagens e as seções 7 e 9, as perguntas da seção 16. **Nenhum código ainda.** | A designer confirmou o `TELAS.md`, as prioridades e as respostas. |
+| **1. Esqueleto** | Projeto Quarto com os arquivos da seção 5, tokens, fontes, `base.css`, barra inferior, `store.js`, `formato.js`, modo de teste, manifesto, service worker, ícones. Uma tela de exemplo: a de **Registrar**, se existir nas imagens. | Renderiza; instala como PWA no Chrome (DevTools > Application); funciona offline; a barra inferior bate com a imagem. |
+| **2. Entrada e Fluxo 1** | Abertura, boas-vindas, entrar, criar conta, cadastro do animal e do grupo, lista de Animais, Registrar e Peso com gráfico. | Fluxo 1 completo, com ≤ 4 toques; o fluxo de entrada leva ao primeiro animal. |
+| **3. Início e Fluxos 2 e 3** | Início, Observação, alertas, dicas, Perfil do animal (Dados, Peso, Diário, Saúde), grupos. | Fluxos 2 e 3 completos; o alerta aparece e some conforme os dados. |
+| **4. Fluxo 4 e lembretes** | Perfil, Exportar histórico (com prévia), Lembretes, Notificações. | Fluxo 4 completo; `Salvar PDF` imprime a prévia bem em A4. |
+| **5. P1** | As demais telas P1 do `TELAS.md` (alimentação, sintomas, consulta, tratamento, cuidados do grupo, check-up, dieta da semana, conta, sobre). | Todas as telas P1 abrem, gravam e leem dados reais. |
+| **6. Polimento** | Acessibilidade, desempenho, revisão visual tela a tela contra as imagens. | Checklist abaixo todo marcado. |
+
+## 13.1 Checklist de pronto (por tela)
+
+- [ ] Confere com a imagem de referência (largura do quadro): medidas, cores, tipografia, ícones.
+- [ ] Só usa tokens e componentes da seção 7 (componente novo, só se a imagem exigir, e registrado).
+- [ ] Alvos de toque ≥ 44 px; foco visível; ordem de foco lógica.
+- [ ] Nenhuma combinação proibida de cores (seção 8); status com ícone e palavra.
+- [ ] Textos conforme a seção 9; sem `[colchetes]` à mostra.
+- [ ] Funciona **sem dados** (estado vazio) e **com dados de exemplo**.
+- [ ] Funciona offline, depois de abrir uma vez com rede.
+- [ ] Funciona a 200% de zoom e com `prefers-reduced-motion`.
+- [ ] Sem erros e sem avisos no console.
+- [ ] `TELAS.md`, `DECISOES.md` e `PENDENCIAS.md` atualizados.
+
+# 14. Registro para o TCC
+
+Mantenha dois arquivos Markdown na raiz.
+
+**`DECISOES.md`** — uma entrada por decisão, no formato:
+
+```text
+## [data] Título curto
+- Tela(s): nome da imagem (por exemplo, registrar-peso)
+- Decisão: o que foi feito
+- Motivo: por que
+- Diferença em relação à imagem de referência: (se houver)
+```
+
+Registre qualquer divergência entre a imagem de referência e o que foi construído, e qualquer escolha feita onde este arquivo estava em aberto.
+
+**`PENDENCIAS.md`** — uma tabela com todo conteúdo que a designer precisa revisar:
+
+| Tela | Texto ou dado | Tipo | O que falta |
+|---|---|---|---|
+
+Tipos: `exemplo` (texto fictício), `clínico` (precisa de revisão veterinária), `jurídico`, `sugestão` (texto proposto pelo Claude Code).
+
+## 14.1 Decisões em aberto: não decida sozinho
+
+Estas estavam em aberto na arquitetura de informação. **Se as imagens do Figma já resolvem uma delas, siga as imagens.** Se não, use o padrão indicado, **registre em `DECISOES.md`** e avise a designer:
+
+- Perfil do animal: abas (padrão) ou lista, se as imagens não mostrarem.
+- Estado vazio do Início nos primeiros dias, sem histórico para comparar.
+- Feno e ração aparecem em Alimentação e em Cuidados do grupo: manter nos dois.
+- Alimentação é registrada por grupo; um porquinho que come separado ou com dieta própria não tem tela ainda.
+- Fezes e urina de um porquinho que vive em grupo: como saber de qual é (resolvido só pela associação do grupo a um animal, F14).
+- Atalho de exportar histórico em Saúde (encurtaria o Fluxo 4).
+- Alertas e doses ignoram o horário de silêncio? (proposta: ignoram).
+- Regra de senha e recuperação por e-mail (não implementar).
+- Cortar unhas e escovar o pelo existem no Check-up > frequência; viram lembretes ou ficam lá? (padrão: ficam no check-up).
+- Textos dos Termos de uso e da Política de privacidade: use texto-modelo marcado como pendente.
+- Tela de "alimentos que não devem ser oferecidos": se não houver imagem, **não construa**.
+- Telas de tratamento no Diário e de estados especiais (por exemplo, um animal com tratamento em andamento): se a imagem faltar, **pergunte**.
+
+# 15. Comandos
+
+```bash
+# renderizar o site para docs/
+quarto render
+
+# desenvolver (recarrega ao salvar; o service worker fica desligado em localhost)
+quarto preview
+
+# testar o PWA de verdade: servir a pasta renderizada e abrir com ?sw=1
+python3 -m http.server -d docs 8080
+# abra http://localhost:8080/?sw=1  (DevTools > Application > Service Workers / Manifest)
+```
+
+- Lighthouse (aba do Chrome DevTools) para conferir instalabilidade, acessibilidade e desempenho.
+- Teste em um celular de verdade: Android (Chrome) e iPhone (Safari, "Adicionar à Tela de Início"). Os dois comportam instalação de forma diferente.
+- Publicação: mande a pasta `docs/` para o GitHub Pages (ou outro host com HTTPS). Depois de publicar, abra a URL pública e confira que o app instala e funciona offline.
+
+# 16. O que perguntar à designer antes de começar
+
+Faça estas perguntas na primeira conversa, **depois de abrir todas as imagens** e **antes de escrever código**, numa única mensagem:
+
+1. Listei as imagens da pasta (diga quantas e os nomes). Alguma tem **várias telas juntas**? Se algum detalhe estiver ilegível, pode exportar essa tela sozinha, em PNG 2×?
+2. Há telas com **alternativas** (opção 1, 2, 3)? Qual adoto em cada uma?
+3. Comparei cores, fontes e medidas das imagens com a seção 7 (mostre as diferenças que achou). Sigo as imagens ou o design system?
+4. Estas funcionalidades não têm imagem (liste as da seção 12.4): vai desenhar ou corto do protótipo?
+5. Os SVGs da logo e o ícone do app estão em `assets/logo/`?
+6. Onde será publicado (GitHub Pages ou outro) e qual será a URL?
+7. O teste de usabilidade será em celular, em computador ou nos dois? (Define o enquadramento da coluna de 430 px.)
+8. Quer o registro de eventos de uso (para medir tempo e toques por fluxo)? Se sim, é um **extra opcional**: só local, exportável em arquivo, com aviso claro, e **fora do escopo** até ela pedir.

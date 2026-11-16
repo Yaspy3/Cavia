@@ -1,0 +1,13 @@
+---
+pagetitle: "Cadastrar animal"
+---
+
+::: {.tela data-aba="animais" data-tela="iPhone 16 - 11"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaAnimalNovo } from "../assets/js/telas/animal-novo.js";
+  telaAnimalNovo(document.querySelector(".tela"));
+</script>
+```

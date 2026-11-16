@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<title>Cavia</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1E555C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cavia">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/icons/icon-192.png" type="image/png">
+<script type="module" src="assets/js/app.js"></script>
+<!-- Moldura de celular em telas grandes (desligar: ?moldura=0) -->
+<script>(function(){try{var p=new URLSearchParams(location.search).get("moldura");if(p==="0"||p==="1")sessionStorage.setItem("cavia:moldura",p);var m=sessionStorage.getItem("cavia:moldura");var ok=matchMedia("(min-width: 700px) and (min-height: 640px)").matches&&!matchMedia("(display-mode: standalone)").matches;if(ok&&m!=="0")document.documentElement.classList.add("com-moldura");}catch(e){}})();</script>
+
+
+<link rel="stylesheet" href="assets/css/fontes.css">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/componentes.css">
+<link rel="stylesheet" href="assets/css/telas.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+
+<body>
+
+
+
+
+
+<div class="abertura" role="main">
+<h1 class="so-leitor">
+Cavia
+</h1>
+<p><img src="assets/logo/cavia-logo-clara.svg" alt="Cavia"></p>
+</div>
+<script type="module">
+  // Abertura só na abertura fria do app (não repete ao voltar). Tempo curto: 1,5 s (a definir).
+  // As telas de entrada foram cortadas do protótipo: o app abre direto, sem conta.
+  const TEMPO_MS = 1500;
+  const destino = "app/inicio.html";
+  let jaViu = false;
+  try { jaViu = sessionStorage.getItem("cavia:abertura") === "1"; sessionStorage.setItem("cavia:abertura", "1"); } catch {}
+  setTimeout(() => location.replace(destino), jaViu ? 0 : TEMPO_MS);
+</script>
+
+
+
+
+
+
+</body></html>

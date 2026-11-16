@@ -1,0 +1,2 @@
+include-in-header: ../_includes/head.html
+include-after-body: ../_includes/nav.html

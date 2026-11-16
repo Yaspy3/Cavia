@@ -1,0 +1,13 @@
+---
+pagetitle: "Registrar peso"
+---
+
+::: {.tela data-aba="registrar" data-tela="iPhone 16 - 19"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaRegistrarPeso } from "../assets/js/telas/registrar-peso.js";
+  telaRegistrarPeso(document.querySelector(".tela"));
+</script>
+```

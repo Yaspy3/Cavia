@@ -1,0 +1,13 @@
+---
+pagetitle: "Perfil"
+---
+
+::: {.tela data-aba="perfil" data-tela="iPhone 16 - 29"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaPerfil } from "../assets/js/telas/perfil.js";
+  telaPerfil(document.querySelector(".tela"));
+</script>
+```

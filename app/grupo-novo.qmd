@@ -1,0 +1,13 @@
+---
+pagetitle: "Criar grupo"
+---
+
+::: {.tela data-aba="animais" data-tela="iPhone 16 - 12"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaGrupoNovo } from "../assets/js/telas/grupo-novo.js";
+  telaGrupoNovo(document.querySelector(".tela"));
+</script>
+```

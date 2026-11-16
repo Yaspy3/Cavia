@@ -1,0 +1,34 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "index.qmd"
+    - "app/*.qmd"
+  post-render: scripts/pos-render.ts
+  resources:
+    - manifest.webmanifest
+    - sw.js
+    - assets/js/
+    - assets/fonts/
+    - assets/icons/
+    - assets/img/
+    - assets/logo/
+
+website:
+  title: "Cavia"
+  page-navigation: false
+
+lang: pt-BR
+
+format:
+  html:
+    minimal: true
+    page-layout: custom
+    title-block-style: none
+    toc: false
+    css:
+      - assets/css/fontes.css
+      - assets/css/tokens.css
+      - assets/css/base.css
+      - assets/css/componentes.css
+      - assets/css/telas.css

@@ -1,0 +1,13 @@
+---
+pagetitle: "Novo lembrete"
+---
+
+::: {.tela data-aba="inicio" data-tela="iPhone 16 - 45"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaLembreteNovo } from "../assets/js/telas/lembrete-novo.js";
+  telaLembreteNovo(document.querySelector(".tela"));
+</script>
+```

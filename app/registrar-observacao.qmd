@@ -1,0 +1,13 @@
+---
+pagetitle: "Registrar observação"
+---
+
+::: {.tela data-aba="registrar" data-tela="iPhone 16 - 20"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaRegistrarObservacao } from "../assets/js/telas/registrar-observacao.js";
+  telaRegistrarObservacao(document.querySelector(".tela"));
+</script>
+```

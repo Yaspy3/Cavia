@@ -1,0 +1,22 @@
+---
+pagetitle: "Cavia"
+include-in-header: _includes/head-raiz.html
+---
+
+::: {.abertura role="main"}
+<h1 class="so-leitor">Cavia</h1>
+
+![](assets/logo/cavia-logo-clara.svg){fig-alt="Cavia"}
+:::
+
+```{=html}
+<script type="module">
+  // Abertura só na abertura fria do app (não repete ao voltar). Tempo curto: 1,5 s (a definir).
+  // As telas de entrada foram cortadas do protótipo: o app abre direto, sem conta.
+  const TEMPO_MS = 1500;
+  const destino = "app/inicio.html";
+  let jaViu = false;
+  try { jaViu = sessionStorage.getItem("cavia:abertura") === "1"; sessionStorage.setItem("cavia:abertura", "1"); } catch {}
+  setTimeout(() => location.replace(destino), jaViu ? 0 : TEMPO_MS);
+</script>
+```

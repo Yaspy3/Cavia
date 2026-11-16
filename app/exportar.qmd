@@ -1,0 +1,13 @@
+---
+pagetitle: "Exportar histórico"
+---
+
+::: {.tela data-aba="perfil" data-tela="iPhone 16 - 42"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaExportar } from "../assets/js/telas/exportar.js";
+  telaExportar(document.querySelector(".tela"));
+</script>
+```

@@ -1,0 +1,13 @@
+---
+pagetitle: "Lembretes"
+---
+
+::: {.tela data-aba="inicio" data-tela="iPhone 16 - 43"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaLembretes } from "../assets/js/telas/lembretes.js";
+  telaLembretes(document.querySelector(".tela"));
+</script>
+```

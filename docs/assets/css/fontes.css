@@ -1,0 +1,8 @@
+/* Figtree é a única fonte do app (decisão da designer). Hospedada no próprio site. */
+@font-face {
+  font-family: "Figtree";
+  src: url("../fonts/figtree-latin-wght-normal.woff2") format("woff2-variations");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}

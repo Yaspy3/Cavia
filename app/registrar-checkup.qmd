@@ -1,0 +1,13 @@
+---
+pagetitle: "Check-up de saúde"
+---
+
+::: {.tela data-aba="registrar" data-tela="iPhone 16 - 28"}
+:::
+
+```{=html}
+<script type="module">
+  import { telaRegistrarCheckup } from "../assets/js/telas/registrar-checkup.js";
+  telaRegistrarCheckup(document.querySelector(".tela"));
+</script>
+```
