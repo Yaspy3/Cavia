@@ -2,6 +2,8 @@
 // e o "o que fazer". Os textos são provisórios (revisão veterinária pendente).
 
 import { animalPorId } from "./acoes.js";
+import { icone } from "./icones.js";
+import { esc } from "./ui.js";
 import { OQUE_FAZER } from "./conteudo/oque-fazer.js";
 import { CAMPOS, nomeDe } from "./conteudo/observacao.js";
 import { itemCheckup } from "./conteudo/checkup.js";
@@ -35,4 +37,40 @@ export function descreverAlerta(a) {
   }
   const resumo = `${animal.nome}: ${CAMPOS[a.campo].rotulo.toLowerCase()} ${nomeDe(a.campo, a.valor).toLowerCase()}`;
   return { nivel, animal, resumo, titulo: resumo, linha: OQUE_FAZER.peso.urgencia, orientacao: OQUE_FAZER.observacao.texto };
+}
+
+/**
+ * Aviso visual de um alerta (perfil do animal e telas de registro): caixa vermelha para urgência,
+ * amarela para atenção; primeira linha em negrito e, abaixo, a orientação.
+ * `semNome`: tira o nome do animal do título (no perfil dele já se sabe de quem é).
+ */
+export function avisoDeAlerta(a, { semNome = false } = {}) {
+  const d = descreverAlerta(a);
+  let titulo = d.titulo;
+  if (semNome && titulo.startsWith(`${d.animal.nome}: `)) {
+    titulo = titulo.slice(d.animal.nome.length + 2);
+    titulo = titulo.charAt(0).toUpperCase() + titulo.slice(1);
+  }
+  const urgente = d.nivel === "urgente";
+  return `<div class="ds-notice ds-notice--${urgente ? "urgente" : "atencao"}" role="note" data-revisao="pendente">
+    <span class="ds-notice__icone">${icone("alerta", { tamanho: 22 })}</span>
+    <p><strong>${esc(titulo)}</strong><br>${esc(urgente ? d.linha : d.orientacao)}</p></div>`;
+}
+
+/**
+ * Depois de salvar um registro que gerou alertas de atenção: esconde o formulário e mostra, na própria
+ * tela de registro, o aviso e o "o que fazer", com atalho para o Diário do animal e para o Início.
+ */
+export function mostrarResultadoComAlertas({ form, titulo, alertas, animalId, destino }) {
+  form.hidden = true;
+  const resultado = document.createElement("section");
+  resultado.className = "form registro-resultado";
+  resultado.setAttribute("aria-labelledby", "t-salvo");
+  resultado.innerHTML = `
+    <h2 class="t-title" id="t-salvo" tabindex="-1">${esc(titulo)}</h2>
+    ${alertas.map((a) => avisoDeAlerta(a)).join("")}
+    <a class="ds-button ds-button--registrar ds-button--bloco" href="animal.html?id=${encodeURIComponent(animalId)}&aba=diario">Ver o diário de ${esc(animalPorId(animalId).nome)}</a>
+    <a class="ds-button ds-button--contorno ds-button--bloco" href="${esc(destino)}">Voltar ao início</a>`;
+  form.after(resultado);
+  resultado.querySelector("#t-salvo").focus();
 }

@@ -1,5 +1,4 @@
-// Início (imagem: iPhone 16 - 3): grupo, resumo, alertas de atenção, dica e lembretes.
-// O cartão de alertas SÓ aparece quando há alerta.
+// Início (imagem: iPhone 16 - 3): grupo, resumo, avisos de urgência (só quando houver), dica e lembretes.
 
 import { obter, assinar, hoje } from "../store.js";
 import { grupoAtual, definirGrupoAtual, animalPorId, concluirLembrete, restaurarLembrete } from "../acoes.js";
@@ -98,27 +97,15 @@ export function telaInicio(raiz) {
         </dl>` : ""}`,
     });
 
-    // --- alertas: avisos de urgência (vermelho) e um cartão compacto de atenção ---
+    // --- alertas: só os de URGÊNCIA (vermelho) ficam no Início; os de atenção (amarelos) aparecem no perfil do animal e nas telas de registro ---
     const lista = grupo ? alertas(estado, h, grupo.id) : [];
     const descritos = lista.map((a, i) => ({ i, ...descreverAlerta(a) }));
     const urgentes = descritos.filter((d) => d.nivel === "urgente");
-    const atencao = descritos.filter((d) => d.nivel !== "urgente");
     const avisosUrgentes = urgentes.map((d) => `
       <button type="button" class="ds-notice ds-notice--urgente alerta-urgente" data-alerta="${d.i}">
         <span class="ds-notice__icone">${icone("alerta", { tamanho: 22 })}</span>
         <span class="alerta-urgente__texto"><strong>${esc(d.titulo)}</strong><br>${esc(d.linha)}</span>
       </button>`).join("");
-    const cartaoAlertas = atencao.length ? `
-      <section class="ds-card ds-card--alertas" aria-labelledby="titulo-alertas">
-        <h2 id="titulo-alertas">Alertas de atenção</h2>
-        <ul>
-          ${atencao.map((d) => `<li><button type="button" class="alerta-compacto" data-alerta="${d.i}" aria-label="${esc(d.resumo)}. Ver o que fazer">
-            <span class="alerta-compacto__icone">${icone("alerta", { tamanho: 16 })}</span>
-            <span class="alerta-compacto__texto">${esc(d.resumo)}</span>
-            ${icone("seta-direita", { tamanho: 16 })}
-          </button></li>`).join("")}
-        </ul>
-      </section>` : "";
     // --- dica ---
     const dica = dicaParaGrupo(estado, grupo, h);
     const cartaoDica = `
@@ -155,7 +142,7 @@ export function telaInicio(raiz) {
         ${linhasLembrete || linhasCheckup ? `<ul class="lembretes-lista">${linhasCheckup}${linhasLembrete}</ul>` : `<p class="t-small t-muted">Nenhum lembrete por enquanto.</p>`}
       </section>` : "";
 
-    raiz.innerHTML = `${topo}<div class="inicio-corpo">${avisosUrgentes}${cartaoAlertas}${cartaoDica}${cartaoLembretes}</div>`;
+    raiz.innerHTML = `${topo}<div class="inicio-corpo">${avisosUrgentes}${cartaoDica}${cartaoLembretes}</div>`;
 
     // --- eventos ---
     raiz.querySelector("#grupo-inicio")?.addEventListener("change", (e) => definirGrupoAtual(e.target.value));

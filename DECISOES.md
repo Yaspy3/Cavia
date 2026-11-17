@@ -289,3 +289,9 @@ Medidas tiradas das imagens de referência (quadro de 393 px) e conferidas no na
 - Os campos de texto aberto ganharam uma dica em cinza mais claro (`#7F8A88`, contraste cerca de 3,6:1 sobre o branco; mais claro que o texto digitado, a pedido da designer). Na dieta: "Marca da ração", "Marca da vitamina C", "Marca do feno"; no ambiente: Recinto e Forração com exemplos. Também receberam dica: conta, novo grupo, novo porquinho (nome, raça, cor, origem, idade), lembrete (o que lembrar, a cada quantos dias, anotação), consulta, tratamento (nome e dose), sintomas e check-up (observação).
 - A dica não substitui o rótulo, que continua visível acima do campo e é o nome acessível; a dica só dá o exemplo. Em `abrirFormularioTexto` cada campo aceita `dica`.
 - Não receberam dica: campos de data, hora, busca (já tinha) e o peso (campo numérico grande com aviso próprio).
+
+## Alertas de atenção fora do Início
+
+- A pedido da designer, o **Início não mostra mais os alertas de atenção (amarelos)**, para não poluir a tela. O Início mantém só os avisos de **urgência** (vermelhos), que pedem ação imediata.
+- Os alertas de atenção agora aparecem: (1) **no perfil do animal**: aba Peso (variação de peso de 5% a menos de 10%) e aba Diário (observações e check-up com atenção); (2) **na tela de registro, logo depois de salvar**: Registrar observação e Check-up mostram "Observação salva"/"Check-up salvo", o aviso amarelo com o "o que fazer" e os atalhos "Ver o diário de …" e "Voltar ao início". Sem alerta, o fluxo segue como antes (volta ao Início com o aviso "salva").
+- O aviso usa a mesma caixa do restante (primeira linha em negrito, orientação abaixo); em `assets/js/alertas.js` (`avisoDeAlerta`, `mostrarResultadoComAlertas`). O cartão "Alertas de atenção" e o botão "O que fazer" do Início foram removidos; o aviso de urgência no Início segue abrindo a folha "O que fazer".

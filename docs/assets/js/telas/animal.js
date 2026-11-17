@@ -3,12 +3,12 @@
 
 import { obter, assinar, hoje, somarDias } from "../store.js";
 import { animalPorId, grupoPorId, editarAnimal } from "../acoes.js";
-import { pesagensDoAnimal, variacaoPeso, alertasDePeso, CHECKUP_PADRAO_DIAS } from "../regras.js";
+import { pesagensDoAnimal, variacaoPeso, alertasDePeso, alertasDeObservacao, alertasDeCheckup, CHECKUP_PADRAO_DIAS } from "../regras.js";
 import { graficoPeso } from "../graficos.js";
 import { avatarHtml } from "../avatar.js";
 import { abrirOpcoesFoto, abrirMontarAvatar } from "../seletores.js";
 import { ilustracao } from "../ilustracoes.js";
-import { descreverAlerta } from "../alertas.js";
+import { avisoDeAlerta } from "../alertas.js";
 import { nomeSintoma } from "../conteudo/sintomas.js";
 import { CAMPOS, nomeDe } from "../conteudo/observacao.js";
 import { gramas, dataCurta, dataLonga, dataRelativa, idade, variacao, inicialDia, diaSemana } from "../formato.js";
@@ -48,14 +48,7 @@ function painelPeso(animal, estado) {
   const pesagens = pesagensDoAnimal(estado, animal.id);
   const recentes = [...pesagens].reverse().slice(0, 10);
   const alerta = alertasDePeso(estado, hoje()).find((a) => a.animalId === animal.id);
-  const d = alerta ? descreverAlerta(alerta) : null;
-  const avisoPeso = !d ? "" : d.nivel === "urgente"
-    ? `<div class="ds-notice ds-notice--urgente" role="note" data-revisao="pendente">
-        <span class="ds-notice__icone">${icone("alerta", { tamanho: 22 })}</span>
-        <p><strong>${esc(d.titulo)}</strong><br>${esc(d.linha)}</p></div>`
-    : `<div class="ds-notice ds-notice--atencao" role="note" data-revisao="pendente">
-        <span class="ds-notice__icone">${icone("alerta", { tamanho: 22 })}</span>
-        <p>${esc(d.orientacao)}</p></div>`;
+  const avisoPeso = alerta ? avisoDeAlerta(alerta, { semNome: true }) : "";
   const linhas = recentes.map((p, i) => {
     const anterior = recentes[i + 1];
     const delta = anterior ? p.gramas - anterior.gramas : null;
@@ -179,7 +172,11 @@ function cartaoHigiene(animal, estado) {
     <ul>${linhaH("Corte de unhas", ultima("unhas"))}${linhaH("Banho", ultima("banho"))}</ul></section>`;
 }
 function painelDiario(animal, estado, vista, aoMudarVista) {
+  // Alertas de atenção das observações e do check-up deste animal (não aparecem no Início)
+  const avisos = [...alertasDeObservacao(estado, hoje()), ...alertasDeCheckup(estado, hoje())]
+    .filter((a) => a.animalId === animal.id).map((a) => avisoDeAlerta(a, { semNome: true })).join("");
   const html = `
+    ${avisos}
     <section class="ds-card ds-card--contorno diario-card" aria-labelledby="t-diario">
       <header class="diario-card__topo"><h2 class="t-title" id="t-diario">Diário</h2><div data-vista></div></header>
       ${vista === "7" ? grade7(animal, estado) : grade30(animal, estado)}

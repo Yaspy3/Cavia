@@ -1,8 +1,10 @@
 // Registrar observação (imagens: iPhone 16 - 20, 39, 40, 41 e 34). Animal ou grupo.
 // Ao salvar vale o Fluxo 2: o app compara com os registros anteriores e, se houver mudança
-// relevante, o alerta e o "o que fazer" aparecem no Início.
+// relevante, o alerta de atenção e o "o que fazer" aparecem aqui, logo após salvar, e no Diário do animal (o Início mostra só urgência).
 
 import { obter, hoje } from "../store.js";
+import { alertasDeObservacao } from "../regras.js";
+import { mostrarResultadoComAlertas } from "../alertas.js";
 import { salvarObservacao, animalPorId, grupoPorId, grupoAtual } from "../acoes.js";
 import { avatarHtml, avatarGrupoHtml } from "../avatar.js";
 import { escolherAnimal, escolherGrupo } from "../seletores.js";
@@ -219,8 +221,15 @@ export function telaRegistrarObservacao(raiz) {
     }
     salvarObservacao({ alvo, alvoId: id, data: dataObs, campos, higiene: [...higiene] });
     const grupoDoAlvo = alvo === "grupo" ? id : animalPorId(id)?.grupoId;
-    agendarAviso("Observação salva.");
-    location.href = `inicio.html${grupoDoAlvo ? `?grupo=${encodeURIComponent(grupoDoAlvo)}` : ""}`;
+    const destino = `inicio.html${grupoDoAlvo ? `?grupo=${encodeURIComponent(grupoDoAlvo)}` : ""}`;
+    // Alertas de atenção ficam aqui e no perfil do animal (o Início só mostra urgência).
+    const novos = alvo === "animal" ? alertasDeObservacao(obter(), hoje()).filter((a) => a.animalId === id) : [];
+    if (!novos.length) {
+      agendarAviso("Observação salva.");
+      location.href = destino;
+      return;
+    }
+    mostrarResultadoComAlertas({ form, titulo: "Observação salva", alertas: novos, animalId: id, destino });
   });
 
   desenharSeletor();

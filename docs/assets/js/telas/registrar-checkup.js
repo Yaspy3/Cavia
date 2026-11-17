@@ -4,6 +4,8 @@
 
 import { obter, hoje } from "../store.js";
 import { salvarCheckup } from "../acoes.js";
+import { alertasDeCheckup } from "../regras.js";
+import { mostrarResultadoComAlertas } from "../alertas.js";
 import { campoAnimal } from "../seletores.js";
 import { GRUPOS_CHECKUP, ITENS_CHECKUP, itemCheckup } from "../conteudo/checkup.js";
 import { esc, abrirFolha, agendarAviso } from "../ui.js";
@@ -123,9 +125,9 @@ export function telaRegistrarCheckup(raiz) {
     salvarCheckup({ animalId: id, data: hoje(), itens: { ...itens }, detalhes: { ...detalhes } });
     const comAtencao = Object.values(itens).some((v) => v === "atencao");
     const grupo = obter().animais.find((a) => a.id === id)?.grupoId;
-    if (comAtencao) {
-      agendarAviso("Check-up salvo. Há itens com atenção: veja o que fazer no Início.");
-      location.href = `inicio.html${grupo ? `?grupo=${encodeURIComponent(grupo)}` : ""}`;
+    const novos = comAtencao ? alertasDeCheckup(obter(), hoje()).filter((a) => a.animalId === id) : [];
+    if (novos.length) {
+      mostrarResultadoComAlertas({ form, titulo: "Check-up salvo", alertas: novos, animalId: id, destino: `inicio.html${grupo ? `?grupo=${encodeURIComponent(grupo)}` : ""}` });
     } else {
       agendarAviso("Check-up salvo. Tudo normal.");
       location.href = `animal.html?id=${encodeURIComponent(id)}&aba=diario`;

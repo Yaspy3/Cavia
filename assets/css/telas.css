@@ -737,3 +737,9 @@ button.ds-notice { width: 100%; border: 0; text-align: left; cursor: pointer; }
 /* ---------- Dicas dentro dos campos (placeholder) ---------- */
 /* Cinza mais claro que o texto digitado; o rótulo acima continua sendo o nome acessível do campo. */
 .ds-input::placeholder { color: #7F8A88; opacity: 1; font-weight: 500; }
+/* ---------- Resultado do registro com alerta de atenção ---------- */
+.registro-resultado { display: grid; gap: var(--space-3); padding-top: var(--space-2); }
+.registro-resultado h2 { margin: 0; }
+.registro-resultado .ds-button { margin: 0; }
+/* Perfil do animal: avisos de atenção acima do conteúdo da aba */
+.perfil-painel > .ds-notice { margin-bottom: var(--space-3); }
