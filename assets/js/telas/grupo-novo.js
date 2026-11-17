@@ -25,7 +25,7 @@ export function telaGrupoNovo(raiz) {
     <form class="form" novalidate>
       <div class="ds-field">
         <label class="ds-field__rotulo form__rotulo" for="nome">Nome do grupo</label>
-        <input class="ds-input" id="nome" name="nome" type="text" autocomplete="off" maxlength="40"
+        <input class="ds-input" id="nome" placeholder="Ex.: Grupo da sala" name="nome" type="text" autocomplete="off" maxlength="40"
                aria-describedby="erro-nome" value="${esc(rascunho.nome)}">
         <p class="ds-field__erro" id="erro-nome" hidden></p>
       </div>

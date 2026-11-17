@@ -57,7 +57,7 @@ export function telaLembreteNovo(raiz) {
     <form class="form" novalidate>
       <div class="ds-field">
         <label class="ds-field__rotulo form__rotulo" for="titulo">O que lembrar</label>
-        <input class="ds-input" id="titulo" name="titulo" type="text" autocomplete="off" maxlength="80" aria-describedby="erro-titulo" value="${esc(f.titulo)}">
+        <input class="ds-input" id="titulo" placeholder="Ex.: Trocar a água" name="titulo" type="text" autocomplete="off" maxlength="80" aria-describedby="erro-titulo" value="${esc(f.titulo)}">
         <p class="ds-field__erro" id="erro-titulo" hidden></p>
       </div>
 
@@ -84,7 +84,7 @@ export function telaLembreteNovo(raiz) {
       <div class="ds-field" data-repetir><span class="ds-field__rotulo form__rotulo">Repetir</span></div>
       <div class="ds-field" data-cada hidden>
         <label class="ds-field__rotulo form__rotulo" for="cadaDias">A cada quantos dias?</label>
-        <input class="ds-input" id="cadaDias" name="cadaDias" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-describedby="erro-cada" value="${esc(f.cadaDias)}">
+        <input class="ds-input" id="cadaDias" placeholder="Ex.: 3" name="cadaDias" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-describedby="erro-cada" value="${esc(f.cadaDias)}">
         <p class="ds-field__erro" id="erro-cada" hidden></p>
       </div>
 
@@ -94,7 +94,7 @@ export function telaLembreteNovo(raiz) {
           <div class="ds-field"><label class="ds-field__rotulo form__rotulo" for="avisar">Avisar</label>
             <select class="ds-input ds-input--select" id="avisar" name="avisar">${AVISOS.map((a) => `<option value="${a.valor}" ${f.avisar === a.valor ? "selected" : ""}>${a.rotulo}</option>`).join("")}</select></div>
           <div class="ds-field"><label class="ds-field__rotulo form__rotulo" for="anotacao">Anotação</label>
-            <textarea class="ds-input ds-input--area" id="anotacao" name="anotacao" rows="3" maxlength="300">${esc(f.anotacao)}</textarea></div>
+            <textarea class="ds-input ds-input--area" id="anotacao" placeholder="Detalhes que ajudem a lembrar" name="anotacao" rows="3" maxlength="300">${esc(f.anotacao)}</textarea></div>
         </div>
       </details>
 

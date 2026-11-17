@@ -26,12 +26,12 @@ export function telaRegistrarConsulta(raiz) {
       <div class="ds-field"><span class="ds-field__rotulo form__rotulo">Data</span><div data-dia></div></div>
       <div class="ds-field">
         <label class="ds-field__rotulo form__rotulo" for="clinica">Veterinário ou clínica</label>
-        <input class="ds-input" id="clinica" name="clinica" type="text" autocomplete="off" maxlength="60">
+        <input class="ds-input" id="clinica" placeholder="Nome do veterinário ou da clínica" name="clinica" type="text" autocomplete="off" maxlength="60">
       </div>
       <div class="ds-field"><span class="ds-field__rotulo form__rotulo">Motivo</span><div data-motivo></div></div>
       <div class="ds-field">
         <label class="ds-field__rotulo form__rotulo" for="orientacao">Orientação do veterinário</label>
-        <textarea class="ds-input ds-input--area" id="orientacao" name="orientacao" rows="4" maxlength="600"></textarea>
+        <textarea class="ds-input ds-input--area" id="orientacao" placeholder="O que o veterinário orientou" name="orientacao" rows="4" maxlength="600"></textarea>
       </div>
       <div class="ds-field consulta-anexo">
         <div data-anexo-previa></div>

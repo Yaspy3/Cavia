@@ -90,7 +90,7 @@ export function abrirFormularioTexto({ titulo, campos, aoSalvar }) {
       form.noValidate = true;
       form.innerHTML = `${campos.map((c) => `
         <div class="ds-field"><label class="ds-field__rotulo form__rotulo" for="f-${c.id}">${esc(c.rotulo)}</label>
-        <input class="ds-input" id="f-${c.id}" name="${c.id}" type="text" autocomplete="off" maxlength="60" value="${esc(c.valor ?? "")}"></div>`).join("")}
+        <input class="ds-input" id="f-${c.id}" name="${c.id}" type="text" autocomplete="off" maxlength="60" placeholder="${esc(c.dica ?? "")}" value="${esc(c.valor ?? "")}"></div>`).join("")}
         <button class="ds-button ds-button--registrar ds-button--bloco" type="submit">Salvar</button>
         <button class="ds-button ds-button--contorno ds-button--bloco" type="button" data-cancelar>Cancelar</button>`;
       form.addEventListener("submit", (e) => {

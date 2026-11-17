@@ -20,7 +20,7 @@ function abrirAchados({ item, atual, aoSalvar }) {
         ${item.achados.length ? `<div class="ds-opcoes" data-achados>
           ${item.achados.map((a) => `<button type="button" class="ds-opcao" aria-pressed="${marcados.has(a)}" data-achado="${esc(a)}" data-revisao="pendente">${esc(a)}</button>`).join("")}</div>` : ""}
         <div class="ds-field"><label class="ds-field__rotulo form__rotulo" for="obs-item">Observação (opcional)</label>
-          <textarea class="ds-input ds-input--area" id="obs-item" rows="3" maxlength="300">${esc(atual?.nota ?? "")}</textarea></div>
+          <textarea class="ds-input ds-input--area" id="obs-item" placeholder="Descreva o que você viu" rows="3" maxlength="300">${esc(atual?.nota ?? "")}</textarea></div>
         <div class="ds-folha__acoes"><button type="button" class="ds-button ds-button--registrar ds-button--bloco" data-salvar>Salvar</button></div>`;
       for (const b of corpo.querySelectorAll("[data-achado]")) {
         b.addEventListener("click", () => {

@@ -18,12 +18,12 @@ export function telaConta(raiz) {
     <form class="form" novalidate>
       <div class="ds-field">
         <label class="ds-field__rotulo form__rotulo" for="nome">Nome</label>
-        <input class="ds-input" id="nome" name="nome" type="text" autocomplete="off" maxlength="60" aria-describedby="erro-nome" value="${esc(conta?.nome ?? "")}">
+        <input class="ds-input" id="nome" placeholder="Seu nome" name="nome" type="text" autocomplete="off" maxlength="60" aria-describedby="erro-nome" value="${esc(conta?.nome ?? "")}">
         <p class="ds-field__erro" id="erro-nome" hidden></p>
       </div>
       <div class="ds-field">
         <label class="ds-field__rotulo form__rotulo" for="email">E-mail</label>
-        <input class="ds-input" id="email" name="email" type="email" inputmode="email" autocomplete="off" maxlength="80" aria-describedby="erro-email" value="${esc(conta?.email ?? "")}">
+        <input class="ds-input" id="email" placeholder="nome@exemplo.com" name="email" type="email" inputmode="email" autocomplete="off" maxlength="80" aria-describedby="erro-email" value="${esc(conta?.email ?? "")}">
         <p class="ds-field__erro" id="erro-email" hidden></p>
       </div>
       <p class="t-small t-muted">Estes dados ficam só neste aparelho. O Cavia não pede nem guarda senha.</p>

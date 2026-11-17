@@ -56,7 +56,7 @@ export function telaAnimalNovo(raiz) {
 
       <div class="ds-field">
         <label class="ds-field__rotulo form__rotulo" for="nome">Nome</label>
-        <input class="ds-input" id="nome" name="nome" type="text" autocomplete="off" maxlength="40" aria-describedby="erro-nome" value="${esc(f.nome)}">
+        <input class="ds-input" id="nome" placeholder="Nome do porquinho" name="nome" type="text" autocomplete="off" maxlength="40" aria-describedby="erro-nome" value="${esc(f.nome)}">
         <p class="ds-field__erro" id="erro-nome" hidden></p>
       </div>
 
@@ -86,7 +86,7 @@ export function telaAnimalNovo(raiz) {
         </div>
         <div class="form__linha" data-nasc-idade hidden>
           <label class="so-leitor" for="idadeNum">Idade</label>
-          <input class="ds-input" id="idadeNum" name="idadeNum" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-describedby="erro-nasc" value="${esc(f.idadeNum)}">
+          <input class="ds-input" id="idadeNum" placeholder="Ex.: 8" name="idadeNum" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-describedby="erro-nasc" value="${esc(f.idadeNum)}">
           <div data-idade-unid></div>
         </div>
         <p class="ds-field__erro" id="erro-nasc" hidden></p>
@@ -96,11 +96,11 @@ export function telaAnimalNovo(raiz) {
         <summary><span><span class="t-title">Mais detalhes</span><span class="t-small t-muted">Raça, cor, origem, castração</span></span>${icone("seta-baixo")}</summary>
         <div class="ds-detalhes__corpo">
           <div class="ds-field"><label class="ds-field__rotulo form__rotulo" for="raca">Raça</label>
-            <input class="ds-input" id="raca" name="raca" type="text" autocomplete="off" maxlength="40" value="${esc(f.raca)}"></div>
+            <input class="ds-input" id="raca" placeholder="Ex.: Abissínio" name="raca" type="text" autocomplete="off" maxlength="40" value="${esc(f.raca)}"></div>
           <div class="ds-field"><label class="ds-field__rotulo form__rotulo" for="cor">Cor</label>
-            <input class="ds-input" id="cor" name="cor" type="text" autocomplete="off" maxlength="40" value="${esc(f.cor)}"></div>
+            <input class="ds-input" id="cor" placeholder="Ex.: Branco e caramelo" name="cor" type="text" autocomplete="off" maxlength="40" value="${esc(f.cor)}"></div>
           <div class="ds-field"><label class="ds-field__rotulo form__rotulo" for="origem">Origem</label>
-            <input class="ds-input" id="origem" name="origem" type="text" autocomplete="off" maxlength="40" value="${esc(f.origem)}"></div>
+            <input class="ds-input" id="origem" placeholder="Ex.: Pet shop, criador ou adoção" name="origem" type="text" autocomplete="off" maxlength="40" value="${esc(f.origem)}"></div>
           <div class="ds-field"><label class="ds-field__rotulo form__rotulo" for="chegouEm">Chegou em</label>
             <input class="ds-input" id="chegouEm" name="chegouEm" type="date" max="${hoje()}" value="${esc(f.chegouEm)}"></div>
           <div class="ds-field" data-castrado><span class="ds-field__rotulo form__rotulo">Castrado</span></div>

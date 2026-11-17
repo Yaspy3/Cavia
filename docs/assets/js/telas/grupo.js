@@ -104,12 +104,12 @@ export function telaGrupo(raiz) {
       painel.innerHTML = aba === "integrantes" ? painelIntegrantes(g) : aba === "alimentacao" ? painelAlimentacao(g, estado) : painelAmbiente(g, estado);
       painel.querySelector("[data-editar-dieta]")?.addEventListener("click", () => abrirFormularioTexto({
         titulo: "Editar dieta",
-        campos: [{ id: "racao", rotulo: "Ração", valor: g.dieta?.racao }, { id: "vitaminaC", rotulo: "Vitamina C", valor: g.dieta?.vitaminaC }, { id: "feno", rotulo: "Feno", valor: g.dieta?.feno }],
+        campos: [{ id: "racao", rotulo: "Ração", dica: "Marca da ração", valor: g.dieta?.racao }, { id: "vitaminaC", rotulo: "Vitamina C", dica: "Marca da vitamina C", valor: g.dieta?.vitaminaC }, { id: "feno", rotulo: "Feno", dica: "Marca do feno", valor: g.dieta?.feno }],
         aoSalvar: (v) => editarGrupoCampos(id, { dieta: { ...g.dieta, ...v } }),
       }));
       painel.querySelector("[data-editar-ambiente]")?.addEventListener("click", () => abrirFormularioTexto({
         titulo: "Editar ambiente",
-        campos: [{ id: "recinto", rotulo: "Recinto", valor: g.ambiente?.recinto }, { id: "forracao", rotulo: "Forração", valor: g.ambiente?.forracao }],
+        campos: [{ id: "recinto", rotulo: "Recinto", dica: "Tipo e medidas, ex.: gaiola 120 x 60 cm", valor: g.ambiente?.recinto }, { id: "forracao", rotulo: "Forração", dica: "Material usado, ex.: maravalha ou fleece", valor: g.ambiente?.forracao }],
         aoSalvar: (v) => editarGrupoCampos(id, { ambiente: { ...g.ambiente, ...v } }),
       }));
     };

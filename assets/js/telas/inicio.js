@@ -4,38 +4,20 @@
 import { obter, assinar, hoje } from "../store.js";
 import { grupoAtual, definirGrupoAtual, animalPorId, concluirLembrete, restaurarLembrete } from "../acoes.js";
 import { alertas, checkupsVencidos } from "../regras.js";
+import { descreverAlerta } from "../alertas.js";
 import { dicaParaGrupo } from "../conteudo/dicas.js";
-import { OQUE_FAZER } from "../conteudo/oque-fazer.js";
-import { CAMPOS, nomeDe } from "../conteudo/observacao.js";
-import { itemCheckup } from "../conteudo/checkup.js";
 import { avatarHtml } from "../avatar.js";
 import { dataTopo, dataCurta, dataRelativa, hora } from "../formato.js";
 import { esc, abrirFolha, avisar, cabecalhoTeal } from "../ui.js";
 import { icone } from "../icones.js";
 
-/** Texto curto do alerta e o "o que fazer" ligado a ele. */
-function descreverAlerta(a) {
-  const animal = animalPorId(a.animalId);
-  if (a.tipo === "peso") {
-    return { resumo: `${animal.nome}: peso caiu ${a.perdaGramas} g`, orientacao: OQUE_FAZER.peso.texto(a.perdaGramas), animal };
-  }
-  if (a.tipo === "checkup") {
-    const nomes = a.itens.map((i) => itemCheckup(i)?.rotulo ?? i).join(", ").toLowerCase();
-    return { resumo: `${animal.nome}: check-up com atenção (${nomes})`, orientacao: OQUE_FAZER.checkup.texto, animal };
-  }
-  return {
-    resumo: `${animal.nome}: ${CAMPOS[a.campo].rotulo.toLowerCase()} ${nomeDe(a.campo, a.valor).toLowerCase()}`,
-    orientacao: OQUE_FAZER.observacao.texto, animal,
-  };
-}
-
 function abrirOqueFazer(a) {
-  const { resumo, orientacao, animal } = descreverAlerta(a);
+  const { titulo, orientacao, animal } = descreverAlerta(a);
   abrirFolha({
     titulo: "O que fazer",
     montar(corpo, fechar) {
       corpo.innerHTML = `
-        <p class="t-strong">${esc(resumo)}</p>
+        <p class="t-strong">${esc(titulo)}</p>
         <p class="t-body obs-oque" data-revisao="pendente">${esc(orientacao)}</p>
         <div class="ds-folha__acoes">
           <a class="ds-button ds-button--secundario ds-button--bloco" href="animal.html?id=${encodeURIComponent(animal.id)}&aba=${a.tipo === "peso" ? "peso" : "diario"}">Ver perfil de ${esc(animal.nome)}</a>
@@ -116,23 +98,27 @@ export function telaInicio(raiz) {
         </dl>` : ""}`,
     });
 
-    // --- alertas ---
+    // --- alertas: avisos de urgência (vermelho) e um cartão compacto de atenção ---
     const lista = grupo ? alertas(estado, h, grupo.id) : [];
-    const cartaoAlertas = lista.length ? `
+    const descritos = lista.map((a, i) => ({ i, ...descreverAlerta(a) }));
+    const urgentes = descritos.filter((d) => d.nivel === "urgente");
+    const atencao = descritos.filter((d) => d.nivel !== "urgente");
+    const avisosUrgentes = urgentes.map((d) => `
+      <button type="button" class="ds-notice ds-notice--urgente alerta-urgente" data-alerta="${d.i}">
+        <span class="ds-notice__icone">${icone("alerta", { tamanho: 22 })}</span>
+        <span class="alerta-urgente__texto"><strong>${esc(d.titulo)}</strong><br>${esc(d.linha)}</span>
+      </button>`).join("");
+    const cartaoAlertas = atencao.length ? `
       <section class="ds-card ds-card--alertas" aria-labelledby="titulo-alertas">
-        <h2 class="t-title" id="titulo-alertas">Alertas de atenção</h2>
+        <h2 id="titulo-alertas">Alertas de atenção</h2>
         <ul>
-          ${lista.map((a, i) => {
-            const { resumo } = descreverAlerta(a);
-            return `<li class="alerta-linha">
-              <span class="ds-chip ds-chip--atencao">${icone("triangulo", { tamanho: 14 })}Atenção</span>
-              <span class="alerta-linha__texto t-strong">${esc(resumo)}</span>
-              <button type="button" class="alerta-linha__acao" data-alerta="${i}">O que fazer ${icone("seta-direita", { tamanho: 16 })}</button>
-            </li>`;
-          }).join("")}
+          ${atencao.map((d) => `<li><button type="button" class="alerta-compacto" data-alerta="${d.i}" aria-label="${esc(d.resumo)}. Ver o que fazer">
+            <span class="alerta-compacto__icone">${icone("alerta", { tamanho: 16 })}</span>
+            <span class="alerta-compacto__texto">${esc(d.resumo)}</span>
+            ${icone("seta-direita", { tamanho: 16 })}
+          </button></li>`).join("")}
         </ul>
       </section>` : "";
-
     // --- dica ---
     const dica = dicaParaGrupo(estado, grupo, h);
     const cartaoDica = `
@@ -169,7 +155,7 @@ export function telaInicio(raiz) {
         ${linhasLembrete || linhasCheckup ? `<ul class="lembretes-lista">${linhasCheckup}${linhasLembrete}</ul>` : `<p class="t-small t-muted">Nenhum lembrete por enquanto.</p>`}
       </section>` : "";
 
-    raiz.innerHTML = `${topo}<div class="inicio-corpo">${cartaoAlertas}${cartaoDica}${cartaoLembretes}</div>`;
+    raiz.innerHTML = `${topo}<div class="inicio-corpo">${avisosUrgentes}${cartaoAlertas}${cartaoDica}${cartaoLembretes}</div>`;
 
     // --- eventos ---
     raiz.querySelector("#grupo-inicio")?.addEventListener("change", (e) => definirGrupoAtual(e.target.value));

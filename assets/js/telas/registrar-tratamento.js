@@ -32,12 +32,12 @@ export function telaRegistrarTratamento(raiz) {
       <div class="ds-field"><span class="ds-field__rotulo form__rotulo--grande">Animal</span><div data-animal></div></div>
       <div class="ds-field">
         <label class="ds-field__rotulo form__rotulo" for="nome">Medicamento ou tratamento</label>
-        <input class="ds-input" id="nome" name="nome" type="text" autocomplete="off" maxlength="60" aria-describedby="erro-nome">
+        <input class="ds-input" id="nome" placeholder="Nome do medicamento ou tratamento" name="nome" type="text" autocomplete="off" maxlength="60" aria-describedby="erro-nome">
         <p class="ds-field__erro" id="erro-nome" hidden></p>
       </div>
       <div class="ds-field">
         <label class="ds-field__rotulo form__rotulo" for="dose">Dose</label>
-        <input class="ds-input" id="dose" name="dose" type="text" autocomplete="off" maxlength="80" aria-describedby="ajuda-dose">
+        <input class="ds-input" id="dose" placeholder="Ex.: 0,5 ml" name="dose" type="text" autocomplete="off" maxlength="80" aria-describedby="ajuda-dose">
         <p class="t-caption t-muted" id="ajuda-dose">Copie da receita do veterinário. O Cavia não sugere dose.</p>
       </div>
       <div class="ds-field"><span class="ds-field__rotulo form__rotulo">Quantas vezes por dia</span><div data-vezes></div>

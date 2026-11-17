@@ -15,8 +15,8 @@ Conteúdo que a designer precisa revisar. Tipos: `exemplo` (texto fictício), `c
 | Regras | Check-up semanal (7 dias) em `regras.js` | clínico | Frequência provisória; revisão veterinária. |
 | Dados de exemplo | Falta: observações dos últimos 14 dias com uma mudança, alimentos da semana, sintomas | exemplo | Entram nas Fases 3 e 5. |
 | Avatar | Cores das 5 pelagens, 4 marcas e 5 fundos | exemplo | Tons estimados a partir da imagem 38; enviar os valores exatos. |
-| Peso | "Diferença maior do que o usual…" e "O valor parece alto. Confira se está em gramas." | clínico | Limites provisórios (15% e 2.000 g) a validar. |
-| Lista de animais | "Atenção" com queda de 5% ou mais | clínico | Limite provisório; revisão veterinária. |
+| Peso | "Diferença maior do que o usual…" e "O valor parece alto. Confira se está em gramas." | clínico | Limites provisórios (10% e 2.000 g) a validar. |
+| Alertas de peso | Atenção com diferença de 5% ou mais e urgência com 10% ou mais, entre a última pesagem e as de 1 a 7 dias antes (ganho ou perda); texto do aviso de urgência | clínico | Limites e janela de 7 dias provisórios; revisão veterinária. |
 | Registrar peso | "Peso salvo", "O peso desse dia foi atualizado.", "Escolha o porquinho.", "Digite o peso em gramas." | sugestão | Confirmar os textos. |
 | Cadastrar animal | Erros: "Digite o nome do porquinho.", "Escolha o grupo.", "Crie um grupo para continuar.", "A data não pode ser no futuro."; "Você ainda não tem um grupo…" | sugestão | Confirmar os textos. |
 | Criar grupo / Animais | "Grupo criado: …", "Nenhum porquinho neste grupo ainda.", "Você ainda não tem grupos…" | sugestão | Confirmar os textos. |

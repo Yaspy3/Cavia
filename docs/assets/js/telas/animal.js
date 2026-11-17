@@ -8,7 +8,7 @@ import { graficoPeso } from "../graficos.js";
 import { avatarHtml } from "../avatar.js";
 import { abrirOpcoesFoto, abrirMontarAvatar } from "../seletores.js";
 import { ilustracao } from "../ilustracoes.js";
-import { OQUE_FAZER } from "../conteudo/oque-fazer.js";
+import { descreverAlerta } from "../alertas.js";
 import { nomeSintoma } from "../conteudo/sintomas.js";
 import { CAMPOS, nomeDe } from "../conteudo/observacao.js";
 import { gramas, dataCurta, dataLonga, dataRelativa, idade, variacao, inicialDia, diaSemana } from "../formato.js";
@@ -48,6 +48,14 @@ function painelPeso(animal, estado) {
   const pesagens = pesagensDoAnimal(estado, animal.id);
   const recentes = [...pesagens].reverse().slice(0, 10);
   const alerta = alertasDePeso(estado, hoje()).find((a) => a.animalId === animal.id);
+  const d = alerta ? descreverAlerta(alerta) : null;
+  const avisoPeso = !d ? "" : d.nivel === "urgente"
+    ? `<div class="ds-notice ds-notice--urgente" role="note" data-revisao="pendente">
+        <span class="ds-notice__icone">${icone("alerta", { tamanho: 22 })}</span>
+        <p><strong>${esc(d.titulo)}</strong><br>${esc(d.linha)}</p></div>`
+    : `<div class="ds-notice ds-notice--atencao" role="note" data-revisao="pendente">
+        <span class="ds-notice__icone">${icone("alerta", { tamanho: 22 })}</span>
+        <p>${esc(d.orientacao)}</p></div>`;
   const linhas = recentes.map((p, i) => {
     const anterior = recentes[i + 1];
     const delta = anterior ? p.gramas - anterior.gramas : null;
@@ -62,9 +70,7 @@ function painelPeso(animal, estado) {
     ${recentes.length ? `<section class="ds-card ds-card--contorno" aria-labelledby="t-hist-peso">
       <h2 class="so-leitor" id="t-hist-peso">Pesagens</h2>
       <table class="peso-lista"><tbody>${linhas}</tbody></table></section>` : ""}
-    ${alerta ? `<div class="ds-notice ds-notice--atencao" role="note" data-revisao="pendente">
-      <span class="ds-notice__icone">${icone("alerta", { tamanho: 20 })}</span>
-      <p>${esc(OQUE_FAZER.peso.texto(alerta.perdaGramas))}</p></div>` : ""}
+    ${avisoPeso}
     <a class="ds-button ds-button--registrar ds-button--bloco" href="registrar-peso.html?animal=${encodeURIComponent(animal.id)}">Registrar peso</a>`;
 }
 

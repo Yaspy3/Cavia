@@ -706,3 +706,34 @@ html.com-moldura .teste { max-width: 100%; }
 .ds-nav__item--registrar[aria-current="page"] { color: var(--rose-ink); }
 .ds-nav__item--registrar .ds-nav__rotulo { margin-top: 35px; }
 @media (max-width: 359px) { .ds-nav__item { font-size: 11px; } }
+/* ---------- Alertas (fase de ajuste: peso 5 % / 10 %, avisos resumidos) ---------- */
+/* Aviso de urgência: cores e tipografia da imagem de referência (caixa vermelha clara, ícone e texto vinho). */
+.ds-notice--urgente { background: #FED9D1; color: #600000; }
+.ds-notice--urgente .ds-notice__icone { color: #600000; }
+.ds-notice--urgente strong { font-weight: 800; }
+.ds-notice p { margin: 0; }
+button.ds-notice { width: 100%; border: 0; text-align: left; cursor: pointer; }
+.alerta-urgente__texto { flex: 1; min-width: 0; }
+
+/* Cartão de atenção resumido: uma linha por alerta, sem etiqueta "Atenção" */
+.ds-card--alertas { padding: var(--space-2) var(--space-3); }
+.ds-card--alertas h2 { margin: 0; padding: var(--space-1) 0; font: 800 14px/20px var(--font-corpo); }
+.ds-card--alertas ul { margin: 0; padding: 0; list-style: none; }
+.ds-card--alertas li + li { border-top: 1px solid color-mix(in srgb, var(--warn-ink) 25%, transparent); }
+.alerta-compacto {
+  display: flex; align-items: center; gap: var(--space-2); width: 100%; min-height: var(--size-touch);
+  padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer;
+  font: 500 14px/20px var(--font-corpo);
+}
+.alerta-compacto__icone { display: grid; place-items: center; flex: none; }
+.alerta-compacto__texto { flex: 1; min-width: 0; }
+
+/* "Lembretes e tarefas": título no topo do cartão, como em "Bom dia!" (o alvo de toque do link sai do fluxo) */
+.lembretes-topo { align-items: flex-start; }
+.lembretes-topo h2 { margin: 0; }
+.lembretes-topo .animais__ver { align-self: flex-start; margin-block: -10px; }
+.ds-notice--urgente { padding-top: 9px; padding-bottom: 9px; }
+
+/* ---------- Dicas dentro dos campos (placeholder) ---------- */
+/* Cinza mais claro que o texto digitado; o rótulo acima continua sendo o nome acessível do campo. */
+.ds-input::placeholder { color: #7F8A88; opacity: 1; font-weight: 500; }

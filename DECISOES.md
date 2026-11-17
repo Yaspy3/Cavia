@@ -105,7 +105,7 @@ Decisões tomadas durante a construção. Formato: data, tela(s), decisão, moti
 
 ## [2026-11-15] Confirmação e aviso de conferência do peso
 - Tela(s): iPhone 16 - 19
-- Decisão: depois de salvar, aparece "Peso salvo" no topo (leitura anunciada), o campo é limpo e o gráfico ganha o novo ponto destacado. O aviso de conferência é condicional e não bloqueia: "Diferença maior do que o usual…" (texto da imagem) com variação de 15% ou mais, e "O valor parece alto. Confira se está em gramas." acima de 2.000 g. Limites provisórios em `regras.js`.
+- Decisão: depois de salvar, aparece "Peso salvo" no topo (leitura anunciada), o campo é limpo e o gráfico ganha o novo ponto destacado. O aviso de conferência é condicional e não bloqueia: "Diferença maior do que o usual…" (texto da imagem) com variação de 10% ou mais (antes 15%; alinhado ao limite de urgência), e "O valor parece alto. Confira se está em gramas." acima de 2.000 g. Limites provisórios em `regras.js`.
 - Diferença em relação à imagem: na imagem o aviso aparece sempre; aqui só quando cabe.
 
 ## [2026-11-15] Status de peso na lista de animais
@@ -276,3 +276,16 @@ Medidas tiradas das imagens de referência (quadro de 393 px) e conferidas no na
 - **Pílula ativa:** 50 x 32 px, a 11 px do topo da barra (antes 56 px de largura e centralizada na barra); rótulo 3 px abaixo da pílula.
 - **Espaçamento:** as quatro colunas continuam iguais (a imagem de referência 3 confirma isso: Início ~49, Porquinhos ~147, Registrar ~252, Perfil ~344 px). Os centros diferentes que aparecem no recorte da referência 17 não foram reproduzidos.
 - A cor da pílula segue o token `primary-soft` (na imagem é um tom mais escuro).
+
+## Alertas de peso, urgência e Início resumido (ajuste a pedido da designer)
+
+- **Regra de peso:** a diferença entre a última pesagem e as pesagens de 1 a 7 dias antes (a maior delas) gera **atenção a partir de 5%** e **urgência a partir de 10%**. Vale para perda e para ganho ("diferença"). Constantes em `regras.js` (`PESO_ATENCAO_PCT`, `PESO_URGENCIA_PCT`, `PESO_JANELA_DIAS`); limites provisórios, a validar com veterinário (`PENDENCIAS.md`). O alerta vale por 7 dias; `statusPeso` ganhou o estado `urgente` (chip vermelho com ícone e a palavra "Urgente").
+- **Aviso de urgência:** segue a imagem de referência: caixa vermelha clara (`#FED9D1`), ícone de contorno e texto vinho (`#600000`), primeira linha em negrito ("Pudim: peso caiu 17% em 7 dias") e segunda linha "Procure um veterinário, sem esperar piorar". Aparece no topo do Início (um por alerta, toque abre "O que fazer") e na aba Peso do animal.
+- **Início resumido:** os alertas de atenção viraram um cartão compacto com **uma linha por alerta** ("Pudim: peso caiu 50 g"), sem a etiqueta "Atenção" e sem o botão "O que fazer"; a linha inteira abre a folha "O que fazer". Textos e lógica de descrição em `assets/js/alertas.js`.
+- **Lembretes e tarefas:** o título ficou no topo do cartão, alinhado como em "Bom dia!"; o link "Ver mais" mantém o alvo de toque de 44 px, mas saiu do fluxo (margem negativa).
+
+## Dicas dentro dos campos de texto (placeholder)
+
+- Os campos de texto aberto ganharam uma dica em cinza mais claro (`#7F8A88`, contraste cerca de 3,6:1 sobre o branco; mais claro que o texto digitado, a pedido da designer). Na dieta: "Marca da ração", "Marca da vitamina C", "Marca do feno"; no ambiente: Recinto e Forração com exemplos. Também receberam dica: conta, novo grupo, novo porquinho (nome, raça, cor, origem, idade), lembrete (o que lembrar, a cada quantos dias, anotação), consulta, tratamento (nome e dose), sintomas e check-up (observação).
+- A dica não substitui o rótulo, que continua visível acima do campo e é o nome acessível; a dica só dá o exemplo. Em `abrirFormularioTexto` cada campo aceita `dica`.
+- Não receberam dica: campos de data, hora, busca (já tinha) e o peso (campo numérico grande com aviso próprio).

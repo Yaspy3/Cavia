@@ -104,6 +104,7 @@ export function pegarRascunho(chave) {
 /** Chip de status do peso: sempre ícone + palavra + cor. */
 export function chipStatusPeso(status) {
   if (status === "atencao") return `<span class="ds-chip ds-chip--atencao">${icone("alerta", { tamanho: 14 })}Atenção</span>`;
+  if (status === "urgente") return `<span class="ds-chip ds-chip--urgente">${icone("alerta", { tamanho: 14 })}Urgente</span>`;
   if (status === "estavel") return `<span class="ds-chip ds-chip--estavel">${icone("check", { tamanho: 14 })}Peso estável</span>`;
   return `<span class="ds-chip">Sem pesagem</span>`;
 }

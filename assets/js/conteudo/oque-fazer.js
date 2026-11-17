@@ -6,6 +6,9 @@ export const OQUE_FAZER = {
   peso: {
     revisao: "pendente",
     texto: (gramas) => `Seu porquinho perdeu ${gramas} g. Pese de novo amanhã e fique de olho no apetite.`,
+    textoGanho: (gramas) => `Seu porquinho ganhou ${gramas} g em poucos dias. Pese de novo amanhã e confira a balança.`,
+    // Texto do aviso de urgência (mesma frase da imagem de sintomas).
+    urgencia: "Procure um veterinário, sem esperar piorar",
   },
   checkup: {
     revisao: "pendente",

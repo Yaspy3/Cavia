@@ -29,7 +29,7 @@ export function telaRegistrarSintomas(raiz) {
       <div class="ds-field"><span class="ds-field__rotulo form__rotulo">Desde quando?</span><div data-dia></div></div>
       <div class="ds-field">
         <label class="ds-field__rotulo form__rotulo" for="nota">Observação</label>
-        <textarea class="ds-input ds-input--area" id="nota" name="nota" rows="3" maxlength="400"></textarea>
+        <textarea class="ds-input ds-input--area" id="nota" placeholder="Descreva o que você notou" name="nota" rows="3" maxlength="400"></textarea>
       </div>
       <div data-urgente aria-live="polite"></div>
       <button class="ds-button ds-button--registrar ds-button--bloco" type="submit">Salvar</button>
