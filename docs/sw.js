@@ -1,4 +1,4 @@
-const VERSAO = "ad42913e40";
+const VERSAO = "0ae2e85d3d";
 const CACHE = `cavia-${VERSAO}`;
 const ARQUIVOS = [
   "./.nojekyll",
@@ -51,6 +51,7 @@ const ARQUIVOS = [
   "./assets/js/alertas.js",
   "./assets/js/app.js",
   "./assets/js/avatar.js",
+  "./assets/js/conteudo/alimentos-dados.js",
   "./assets/js/conteudo/alimentos.js",
   "./assets/js/conteudo/checkup.js",
   "./assets/js/conteudo/dicas.js",
@@ -58,6 +59,7 @@ const ARQUIVOS = [
   "./assets/js/conteudo/oque-fazer.js",
   "./assets/js/conteudo/sintomas.js",
   "./assets/js/datas.js",
+  "./assets/js/dieta-ideal.js",
   "./assets/js/formato.js",
   "./assets/js/foto.js",
   "./assets/js/graficos.js",

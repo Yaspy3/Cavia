@@ -123,7 +123,7 @@ export function criarExemplo() {
   ];
 
   // Vegetais da semana do Grupo 1 (últimos 7 dias): pimentão todo dia, o resto em alguns dias.
-  const semana = { pimentao: [0, 1, 2, 3, 4, 5, 6], cenoura: [1, 4], couve: [3], rucula: [1, 2, 3, 4, 5] };
+  const semana = { "pimentao-verde": [0, 1, 2, 3, 4, 5, 6], cenoura: [1, 4], couve: [3], rucula: [1, 3, 5] };
   for (let i = 0; i < 7; i++) {
     e.alimentacao.push({
       id: uuid(), grupoId: g1, data: d(-6 + i),

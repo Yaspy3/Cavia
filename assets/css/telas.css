@@ -743,3 +743,22 @@ button.ds-notice { width: 100%; border: 0; text-align: left; cursor: pointer; }
 .registro-resultado .ds-button { margin: 0; }
 /* Perfil do animal: avisos de atenção acima do conteúdo da aba */
 .perfil-painel > .ds-notice { margin-bottom: var(--space-3); }
+/* ---------- Base de alimentos (TACO + Keeble) ---------- */
+.alim-titulo { margin-bottom: var(--space-1); }
+.alim-titulo h2 { margin: 0; }
+.alim-nota { margin-top: var(--space-3); }
+.alim-fonte { margin-top: var(--space-3); }
+.alim-nutrientes li .ds-chip:empty { display: none; }
+.dieta-ideal { display: grid; gap: var(--space-3); }
+.dieta-ideal__lista { display: grid; gap: var(--space-2); padding-left: var(--space-4); list-style: disc; font: 500 14px/20px var(--font-corpo); }
+.dieta-ideal__abrir { display: block; margin: var(--space-3) auto 0; min-height: var(--size-touch); font-weight: 800; color: var(--primary); }
+/* ---------- Lista de alimentos organizada (abas + grupos recolhíveis) ---------- */
+.alim-guia { margin: 0 0 var(--space-3); }
+.alim-busca { margin-bottom: var(--space-2); }
+[data-filtro] { margin-bottom: var(--space-3); }
+.alim-fontes { display: grid; gap: 4px; margin: 0 0 var(--space-3); padding: 0; list-style: none; font: 500 13px/18px var(--font-corpo); }
+.dieta-ideal section { display: grid; gap: var(--space-2); }
+.dieta-ideal h3 { margin: 0; }
+
+.dieta-ideal section { display: grid; gap: var(--space-2); }
+.dieta-ideal h3 { margin: 0; }

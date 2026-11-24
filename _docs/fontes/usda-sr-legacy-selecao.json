@@ -1,0 +1,200 @@
+{
+ "167755": {
+  "descricao": "Raspberries, raw",
+  "carbo": 11.94,
+  "kcal": 52,
+  "vitC": 26.2,
+  "calcio": 25,
+  "fibra": 6.5,
+  "fosforo": 29
+ },
+ "168389": {
+  "descricao": "Asparagus, raw",
+  "vitC": 5.6,
+  "carbo": 3.88,
+  "kcal": 20,
+  "fibra": 2.1,
+  "fosforo": 52,
+  "calcio": 24
+ },
+ "168407": {
+  "descricao": "Cress, garden, raw",
+  "carbo": 5.5,
+  "kcal": 32,
+  "fibra": 1.1,
+  "fosforo": 76,
+  "vitC": 69,
+  "calcio": 81
+ },
+ "168412": {
+  "descricao": "Endive, raw",
+  "kcal": 17,
+  "calcio": 52,
+  "vitC": 6.5,
+  "fibra": 3.1,
+  "fosforo": 28,
+  "carbo": 3.35
+ },
+ "168421": {
+  "descricao": "Kale, raw",
+  "vitC": 93.4,
+  "fibra": 4.1,
+  "fosforo": 55,
+  "carbo": 4.42,
+  "kcal": 35,
+  "calcio": 254
+ },
+ "168429": {
+  "descricao": "Lettuce, butterhead (includes boston and bibb types), raw",
+  "carbo": 2.23,
+  "kcal": 13,
+  "vitC": 3.7,
+  "fibra": 1.1,
+  "fosforo": 33,
+  "calcio": 35
+ },
+ "168564": {
+  "descricao": "Radicchio, raw",
+  "carbo": 4.48,
+  "kcal": 23,
+  "calcio": 19,
+  "fosforo": 40,
+  "vitC": 8,
+  "fibra": 0.9
+ },
+ "169226": {
+  "descricao": "Dandelion greens, raw",
+  "carbo": 9.2,
+  "kcal": 45,
+  "calcio": 187,
+  "vitC": 35,
+  "fibra": 3.5,
+  "fosforo": 66
+ },
+ "169247": {
+  "descricao": "Lettuce, cos or romaine, raw",
+  "carbo": 3.29,
+  "kcal": 17,
+  "vitC": 4,
+  "calcio": 33,
+  "fibra": 2.1,
+  "fosforo": 30
+ },
+ "169997": {
+  "descricao": "Coriander (cilantro) leaves, raw",
+  "carbo": 3.67,
+  "kcal": 23,
+  "calcio": 67,
+  "vitC": 27,
+  "fibra": 2.8,
+  "fosforo": 48
+ },
+ "170010": {
+  "descricao": "Peas, edible-podded, raw",
+  "carbo": 7.55,
+  "kcal": 42,
+  "fibra": 2.6,
+  "fosforo": 53,
+  "vitC": 60,
+  "calcio": 43
+ },
+ "170061": {
+  "descricao": "Turnip greens, raw",
+  "fibra": 3.2,
+  "carbo": 7.13,
+  "kcal": 32,
+  "fosforo": 42,
+  "vitC": 60,
+  "calcio": 190
+ },
+ "170383": {
+  "descricao": "Brussels sprouts, raw",
+  "fibra": 3.8,
+  "carbo": 8.95,
+  "kcal": 43,
+  "fosforo": 69,
+  "vitC": 85,
+  "calcio": 42
+ },
+ "170390": {
+  "descricao": "Cabbage, chinese (pak-choi), raw",
+  "fibra": 1,
+  "fosforo": 37,
+  "vitC": 45,
+  "calcio": 105,
+  "carbo": 2.18,
+  "kcal": 13
+ },
+ "170417": {
+  "descricao": "Parsnips, raw",
+  "carbo": 17.99,
+  "kcal": 75,
+  "vitC": 17,
+  "fibra": 4.9,
+  "fosforo": 71,
+  "calcio": 36
+ },
+ "171697": {
+  "descricao": "Apricots, raw",
+  "fibra": 2,
+  "fosforo": 23,
+  "calcio": 13,
+  "vitC": 10,
+  "carbo": 11.12,
+  "kcal": 48
+ },
+ "171711": {
+  "descricao": "Blueberries, raw",
+  "vitC": 9.7,
+  "carbo": 14.49,
+  "kcal": 57,
+  "calcio": 6,
+  "fibra": 2.4,
+  "fosforo": 12
+ },
+ "171719": {
+  "descricao": "Cherries, sweet, raw",
+  "carbo": 16.01,
+  "kcal": 63,
+  "calcio": 13,
+  "vitC": 7,
+  "fibra": 2.1,
+  "fosforo": 21
+ },
+ "172233": {
+  "descricao": "Dill weed, fresh",
+  "carbo": 7.02,
+  "kcal": 43,
+  "calcio": 208,
+  "vitC": 85,
+  "fosforo": 66,
+  "fibra": 2.1
+ },
+ "173470": {
+  "descricao": "Thyme, fresh",
+  "fibra": 14,
+  "fosforo": 106,
+  "vitC": 160.1,
+  "carbo": 24.45,
+  "kcal": 101,
+  "calcio": 405
+ },
+ "173475": {
+  "descricao": "Spearmint, fresh",
+  "carbo": 8.41,
+  "kcal": 44,
+  "calcio": 199,
+  "fibra": 6.8,
+  "fosforo": 60,
+  "vitC": 13.3
+ },
+ "173946": {
+  "descricao": "Blackberries, raw",
+  "calcio": 29,
+  "fibra": 5.3,
+  "fosforo": 22,
+  "carbo": 9.61,
+  "kcal": 43,
+  "vitC": 21
+ }
+}

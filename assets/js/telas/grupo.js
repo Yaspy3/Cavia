@@ -7,6 +7,7 @@ import { statusPeso } from "../regras.js";
 import { avatarHtml, avatarGrupoHtml } from "../avatar.js";
 import { abrirFormularioTexto } from "../seletores.js";
 import { alimentoPorId } from "../conteudo/alimentos.js";
+import { abrirDietaIdeal } from "../dieta-ideal.js";
 import { dataCurta, inicialDia, diaSemana, intervalo } from "../formato.js";
 import { esc, criarAbas, cabecalhoTeal, chipStatusPeso } from "../ui.js";
 import { icone } from "../icones.js";
@@ -56,6 +57,7 @@ function painelAlimentacao(grupo, estado) {
             return `<td><span class="veg-ponto ${deu ? "veg-ponto--sim" : ""}">${deu ? icone("check", { tamanho: 12 }) : ""}</span><span class="so-leitor">${deu ? "oferecido" : "não oferecido"}</span></td>`;
           }).join("")}</tr>`).join("")}</tbody></table>`
       : `<p class="t-small t-muted">Nenhum vegetal ou fruta registrado nesta semana.</p>`}
+      <button type="button" class="form__link link-botao dieta-ideal__abrir" data-dieta-ideal>Ver a dieta ideal (Keeble, 2023)</button>
     </section>
     <a class="ds-button ds-button--registrar ds-button--bloco" href="registrar-alimentacao.html?grupo=${encodeURIComponent(grupo.id)}">Registrar alimentação</a>`;
 }
@@ -102,6 +104,7 @@ export function telaGrupo(raiz) {
       const estado = obter();
       const g = grupoPorId(id);
       painel.innerHTML = aba === "integrantes" ? painelIntegrantes(g) : aba === "alimentacao" ? painelAlimentacao(g, estado) : painelAmbiente(g, estado);
+      painel.querySelector("[data-dieta-ideal]")?.addEventListener("click", abrirDietaIdeal);
       painel.querySelector("[data-editar-dieta]")?.addEventListener("click", () => abrirFormularioTexto({
         titulo: "Editar dieta",
         campos: [{ id: "racao", rotulo: "Ração", dica: "Marca da ração", valor: g.dieta?.racao }, { id: "vitaminaC", rotulo: "Vitamina C", dica: "Marca da vitamina C", valor: g.dieta?.vitaminaC }, { id: "feno", rotulo: "Feno", dica: "Marca do feno", valor: g.dieta?.feno }],

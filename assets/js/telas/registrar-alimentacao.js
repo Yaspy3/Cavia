@@ -1,9 +1,12 @@
 // Registrar alimentação (imagens: iPhone 16 - 22 e pop-up 35). Registro por GRUPO:
-// feno, ração e vegetais e frutas do dia. O conteúdo nutricional é provisório (revisao: "pendente").
+// feno, ração e vegetais e frutas do dia. Valores nutricionais: TACO e USDA; frequência sugerida: Keeble (2023)
+// e guia da ACC NYC. A lista é simples (linhas com caixa de marcar), com filtro por tipo e busca; os mais frequentes vêm primeiro.
+// Veja conteudo/alimentos.js. O conteúdo é provisório (revisao: "pendente").
 
 import { obter, hoje } from "../store.js";
 import { grupoPorId, grupoAtual, salvarAlimentacao, definirAlimentoNoDia, animaisDoGrupo } from "../acoes.js";
-import { ALIMENTOS, CATEGORIAS, alimentoPorId } from "../conteudo/alimentos.js";
+import { ALIMENTOS, CATEGORIAS, alimentoPorId, nutrientesPor10g, coberturaVitC10g, notaCalcio, VITC_DIARIA_MG_POR_KG } from "../conteudo/alimentos.js";
+import { abrirDietaIdeal } from "../dieta-ideal.js";
 import { somarDias } from "../datas.js";
 import { inicialDia, diaSemana, dataCurta } from "../formato.js";
 import { esc, opcoes, campoDia, abrirFolha, agendarAviso } from "../ui.js";
@@ -41,12 +44,14 @@ function abrirAlimento({ alimento, grupoId, aoSalvar }) {
               <span class="alim-dia__letra" aria-hidden="true">${inicialDia(d)}</span><span class="alim-dia__ponto" aria-hidden="true">${icone("check", { tamanho: 14 })}</span></button>`).join("")}
           </div>
         </section>
-        ${alimento.nutrientes ? `
-          <h3 class="t-strong alim-sub">A cada 10 g</h3>
-          <ul class="alim-nutrientes" data-revisao="pendente">${alimento.nutrientes.map((n) => `
-            <li><span>${esc(n.nome)}</span><span class="alim-nutrientes__valor">${esc(n.valor)}</span>
-            <span class="ds-chip ${n.tom === "atencao" ? "ds-chip--atencao" : "ds-chip--estavel"}">${n.nivel === "alto" ? "Alto" : "Normal"}</span></li>`).join("")}</ul>`
-        : `<p class="t-small t-muted alim-sub">Os valores nutricionais deste alimento estão em validação.</p>`}
+        <h3 class="t-strong alim-sub">A cada 10 g</h3>
+        <ul class="alim-nutrientes" data-revisao="pendente">${nutrientesPor10g(alimento).map((n) => `
+          <li><span>${esc(n.nome)}</span><span class="alim-nutrientes__valor">${esc(n.valor)}</span>
+          ${n.rotuloNivel ? `<span class="ds-chip ${n.tom === "atencao" ? "ds-chip--atencao" : n.tom === "ok" ? "ds-chip--estavel" : ""}">${n.rotuloNivel}</span>` : ""}</li>`).join("")}</ul>
+        ${coberturaVitC10g(alimento) !== null ? `<p class="t-small t-muted alim-nota" data-revisao="pendente">Vitamina C: 10 g cobrem cerca de ${coberturaVitC10g(alimento)}% da necessidade diária de um porquinho de 1 kg (${VITC_DIARIA_MG_POR_KG} mg por kg).</p>` : ""}
+        ${notaCalcio(alimento) ? `<div class="ds-notice ds-notice--atencao alim-nota" data-revisao="pendente"><span class="ds-notice__icone">${icone("alerta", { tamanho: 20 })}</span><p>${esc(notaCalcio(alimento))}</p></div>` : ""}
+        ${alimento.notas.map((x) => `<p class="t-small alim-nota" data-revisao="pendente">${esc(x)}</p>`).join("")}
+        <p class="t-caption t-muted alim-fonte" data-revisao="pendente">Fontes: ${alimento.fontes.map((f) => `${esc(f.nome)}: ${esc(f.texto)}`).join(". ")}.${alimento.divergem ? " As fontes diferem; o app mostra a sugestão mais cautelosa." : ""} Valores nutricionais: ${esc(alimento.origemDados)}.</p>
         <div data-aviso></div>
         <div class="ds-folha__acoes"><button type="button" class="ds-button ds-button--registrar ds-button--bloco" data-salvar>Salvar</button></div>`;
 
@@ -117,12 +122,12 @@ export function telaRegistrarAlimentacao(raiz) {
       </section>
 
       <div class="ds-field">
-        <h2 class="form__rotulo" id="t-veg">Vegetais e frutas</h2>
+        <header class="dados-topo alim-titulo"><h2 class="form__rotulo" id="t-veg">Vegetais e frutas</h2><button type="button" class="animais__ver link-botao" data-dieta-ideal>Dieta ideal</button></header>
+        <p class="t-small t-muted alim-guia">Cerca de 1 xícara por dia: 2 a 3 folhas e 1 a 2 outros vegetais.</p>
         <label class="so-leitor" for="busca">Buscar alimento</label>
         <div class="alim-busca">${icone("busca")}<input class="ds-input" id="busca" type="search" placeholder="Buscar alimento" autocomplete="off"></div>
         <div data-filtro></div>
-        <div class="ds-card ds-card--contorno ds-card--lista" data-lista role="group" aria-labelledby="t-veg"></div>
-      </div>
+        <div class="ds-card ds-card--contorno ds-card--lista" data-lista role="group" aria-labelledby="t-veg"></div>      </div>
       <p class="ds-field__erro" id="erro-alim" role="alert" hidden></p>
       <button class="ds-button ds-button--registrar ds-button--bloco" type="submit">Salvar alimentação</button>
     </form>`;
@@ -135,7 +140,7 @@ export function telaRegistrarAlimentacao(raiz) {
   function carregarDoDia() {
     const r = registroDoDia(grupoId, dia.valor());
     marcados.clear();
-    (r?.alimentos ?? []).forEach((id) => marcados.add(id));
+    (r?.alimentos ?? []).forEach((id) => marcados.add(alimentoPorId(id)?.id ?? id));
     feno = !!r?.feno;
     racao = !!r?.racao;
     pintarBase();
@@ -147,19 +152,21 @@ export function telaRegistrarAlimentacao(raiz) {
     form.querySelector('[data-base="racao"]').setAttribute("aria-pressed", String(racao));
   }
 
+  const linhaHtml = (a) => `
+    <div class="alim-linha">
+      <label class="alim-linha__marcar">
+        <input class="ds-caixa" type="checkbox" value="${a.id}" ${marcados.has(a.id) ? "checked" : ""}>
+        <span class="ds-lista__texto"><span class="t-strong" data-revisao="pendente">${esc(a.nome)}</span>
+          ${a.etiqueta ? `<span class="t-small t-muted" data-revisao="pendente">${esc(a.etiqueta)}</span>` : ""}</span>
+        ${chipFrequencia(a)}
+      </label>
+      <button type="button" class="alim-info" data-info="${a.id}" aria-label="Informações sobre ${esc(a.nome)}">${icone("info", { tamanho: 20 })}</button>
+    </div>`;
+
   function pintarLista() {
     const itens = ALIMENTOS.filter((a) => (filtro === "tudo" || a.categoria === filtro) && semAcento(a.nome).includes(semAcento(busca)));
-    lista.innerHTML = itens.length ? itens.map((a) => `
-      <div class="alim-linha">
-        <label class="alim-linha__marcar">
-          <input class="ds-caixa" type="checkbox" value="${a.id}" ${marcados.has(a.id) ? "checked" : ""}>
-          <span class="ds-lista__texto"><span class="t-strong" data-revisao="pendente">${esc(a.nome)}</span>
-            ${a.etiqueta ? `<span class="t-small t-muted" data-revisao="pendente">${esc(a.etiqueta)}</span>` : ""}</span>
-          ${chipFrequencia(a)}
-        </label>
-        <button type="button" class="alim-info" data-info="${a.id}" aria-label="Informações sobre ${esc(a.nome)}">${icone("info", { tamanho: 20 })}</button>
-      </div>`).join("")
-      : `<p class="t-small t-muted alim-vazio">${filtro === "frutas" ? "Nenhuma fruta cadastrada ainda." : "Nenhum alimento encontrado."}</p>`;
+    itens.sort((x, y) => x.grupo - y.grupo);   // os de todo dia primeiro
+    lista.innerHTML = itens.length ? itens.map(linhaHtml).join("") : `<p class="t-small t-muted alim-vazio">Nenhum alimento encontrado.</p>`;
     for (const c of lista.querySelectorAll('input[type="checkbox"]')) {
       c.addEventListener("change", () => { c.checked ? marcados.add(c.value) : marcados.delete(c.value); form.querySelector("#erro-alim").hidden = true; });
     }
@@ -167,7 +174,6 @@ export function telaRegistrarAlimentacao(raiz) {
       b.addEventListener("click", () => abrirAlimento({ alimento: alimentoPorId(b.dataset.info), grupoId, aoSalvar: carregarDoDia }));
     }
   }
-
   form.querySelector("#grupo").addEventListener("change", (e) => { grupoId = e.target.value; carregarDoDia(); });
   for (const b of form.querySelectorAll("[data-base]")) {
     b.addEventListener("click", () => {
@@ -177,13 +183,13 @@ export function telaRegistrarAlimentacao(raiz) {
       form.querySelector("#erro-alim").hidden = true;
     });
   }
+  form.querySelector("[data-dieta-ideal]").addEventListener("click", abrirDietaIdeal);
   form.querySelector("#busca").addEventListener("input", (e) => { busca = e.target.value; pintarLista(); });
   form.querySelector("[data-filtro]").append(opcoes({
     rotulo: "Categoria", valor: filtro,
     itens: [{ valor: "tudo", rotulo: "Tudo" }, ...CATEGORIAS.map((c) => ({ valor: c.id, rotulo: c.rotulo }))],
     aoMudar: (v) => { filtro = v; pintarLista(); },
   }));
-
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const erro = form.querySelector("#erro-alim");
