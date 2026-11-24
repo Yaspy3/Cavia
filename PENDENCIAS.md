@@ -53,4 +53,4 @@ Conteúdo que a designer precisa revisar. Tipos: `exemplo` (texto fictício), `c
 | Prévia do histórico | Impressão em A4 / "Salvar PDF" | verificação | Conferir em papel ou PDF; ver `QA.md`. |
 | Acessibilidade | Leitor de tela e fonte ampliada do sistema | verificação | O script confere a estrutura; falta teste com TalkBack/VoiceOver. |
 | Revisão final | Conteúdo clínico (`revisao: "pendente"`) | clínico | Use `?teste=1` e "Destacar conteúdo a validar" para ver tudo o que falta validar. |
-| Observação | Desenhos das fezes e da urina recortados das imagens (PNG 2x) | arte | Enviar os desenhos em SVG para trocar os PNG e ganhar nitidez em qualquer tamanho. |
+| Observação | Desenhos das fezes e da urina em SVG (Figma) | arte | Faltam o SVG de "Urina com esforço" (ainda PNG) e o de "Fezes anormal" (hoje é a forma de "normal" em verde). |

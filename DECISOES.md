@@ -295,3 +295,9 @@ Medidas tiradas das imagens de referência (quadro de 393 px) e conferidas no na
 - A pedido da designer, o **Início não mostra mais os alertas de atenção (amarelos)**, para não poluir a tela. O Início mantém só os avisos de **urgência** (vermelhos), que pedem ação imediata.
 - Os alertas de atenção agora aparecem: (1) **no perfil do animal**: aba Peso (variação de peso de 5% a menos de 10%) e aba Diário (observações e check-up com atenção); (2) **na tela de registro, logo depois de salvar**: Registrar observação e Check-up mostram "Observação salva"/"Check-up salvo", o aviso amarelo com o "o que fazer" e os atalhos "Ver o diário de …" e "Voltar ao início". Sem alerta, o fluxo segue como antes (volta ao Início com o aviso "salva").
 - O aviso usa a mesma caixa do restante (primeira linha em negrito, orientação abaixo); em `assets/js/alertas.js` (`avisoDeAlerta`, `mostrarResultadoComAlertas`). O cartão "Alertas de atenção" e o botão "O que fazer" do Início foram removidos; o aviso de urgência no Início segue abrindo a folha "O que fazer".
+
+## Desenhos de fezes e urina em SVG
+
+- Os desenhos de fezes e urina agora são os **SVGs exportados do Figma** pela designer (`assets/img/obs/*.svg`), no tamanho de cada arquivo. Isso resolve a pendência de versão vetorial e deixa os desenhos nítidos em qualquer tela.
+- Correspondência: fezes normal, gota, empelotado, viscoso e mole usam o SVG de formato equivalente; urina normal (gota amarela), cor diferente (rosa), com sangue (vermelha), branco ou turva (contorno) e muito ou pouca (três gotas).
+- **"Fezes anormal"**: não veio SVG próprio; usa a forma de "Fezes normal" (as três elipses) em verde `#447213`, a cor do desenho anterior. **"Urina com esforço"** continua em PNG (gota com raios), à espera do SVG.
