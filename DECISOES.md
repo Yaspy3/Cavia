@@ -334,3 +334,12 @@ Medidas tiradas das imagens de referência (quadro de 393 px) e conferidas no na
 
 - A designer preferiu a **primeira versão da lista**: uma lista única, em linhas com caixa de marcar, nome, etiqueta nutricional e frequência, com **filtro por tipo** (Tudo, Folhas e ervas, Outros vegetais, Frutas) e **busca**. Os cards em grade, as abas e os grupos recolhíveis saíram. Os itens mais frequentes (todo dia) vêm primeiro.
 - No pop-up do alimento, as linhas "Keeble (2023): ..." e "Guia ACC NYC: ..." **saíram do topo**. Agora só aparecem como **fonte, no rodapé**, junto da origem dos valores nutricionais (e do aviso quando as duas fontes diferem). No topo fica só a sugestão de frequência.
+
+## Animação da logo na abertura
+
+- Na tela de abertura, a logo agora é um **SVG inline** (mesmo desenho de `assets/logo/cavia-logo-clara.svg`), separado em duas partes: o **símbolo** (caderno com o porquinho) e a **palavra "Cavia"**.
+- Sequência (3,2 s no total): a logo aparece inteira; a palavra **entra no símbolo** (some pela borda direita do caderno, que vai para o centro da tela); o símbolo fica sozinho por um instante; a palavra **sai de novo** e a logo volta inteira; então o app abre o Início. A palavra é recortada na borda do símbolo e o recorte acompanha o símbolo, por isso ela parece entrar e sair "de dentro" do caderno.
+- Com **"reduzir movimento"** ligado no aparelho, não há animação: a logo fica parada e a abertura dura 1,5 s, como antes. A abertura continua só na abertura fria do app (não repete ao voltar).
+- Se a logo mudar, é preciso copiar os paths de novo para `index.qmd` (as 6 primeiras formas são a palavra; as 12 seguintes, o símbolo).
+
+- **Ajuste (pedido da designer):** a animação ficou mais simples e mais lenta. Começa **só com o símbolo**, centrado; depois de 0,9 s a palavra **sai de dentro dele** em 1,6 s, enquanto o símbolo vai para a sua posição na logo; a logo fica inteira até abrir o Início. A palavra não entra mais no símbolo. A abertura dura 3,6 s (1,5 s com "reduzir movimento").

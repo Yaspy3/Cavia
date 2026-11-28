@@ -5,7 +5,7 @@
   display: grid; place-items: center; min-height: 100vh; min-height: 100dvh;
   background: var(--primary);
 }
-.abertura img { width: min(70vw, 280px); height: auto; }
+.abertura img, .abertura__logo { width: min(70vw, 280px); height: auto; }
 
 /* ---------- Registrar ---------- */
 .registrar__titulo { margin-bottom: var(--space-4); }
@@ -760,5 +760,20 @@ button.ds-notice { width: 100%; border: 0; text-align: left; cursor: pointer; }
 .dieta-ideal section { display: grid; gap: var(--space-2); }
 .dieta-ideal h3 { margin: 0; }
 
-.dieta-ideal section { display: grid; gap: var(--space-2); }
-.dieta-ideal h3 { margin: 0; }
+
+/* ---------- Abertura: animação da logo ----------
+   Começa só com o símbolo (caderno) no centro; depois a palavra "Cavia" sai de dentro dele, devagar,
+   enquanto o símbolo vai para a sua posição na logo. A logo fica inteira até abrir o Início. */
+.abertura__logo { width: min(70vw, 280px); height: auto; overflow: visible; animation: abertura-surge .5s ease-out both; }
+.abertura__movel, .abertura__palavra { animation: 1.6s cubic-bezier(.45, 0, .2, 1) .9s both; }
+.abertura__movel { animation-name: abertura-centraliza; }
+.abertura__palavra { animation-name: abertura-palavra; }
+@keyframes abertura-surge { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+/* 103,5 = distância entre o centro do símbolo (36) e o centro da logo (139,5), em unidades do viewBox */
+@keyframes abertura-centraliza { from { transform: translateX(103.5px); } to { transform: translateX(0); } }
+/* -206 = a palavra (x 99 a 278) começa toda escondida atrás da borda do símbolo (x 73) */
+@keyframes abertura-palavra { from { transform: translateX(-206px); } to { transform: translateX(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .abertura__logo, .abertura__movel, .abertura__palavra { animation: none; }
+}
+

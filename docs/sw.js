@@ -1,4 +1,4 @@
-const VERSAO = "0ae2e85d3d";
+const VERSAO = "bc5c3bc651";
 const CACHE = `cavia-${VERSAO}`;
 const ARQUIVOS = [
   "./.nojekyll",
